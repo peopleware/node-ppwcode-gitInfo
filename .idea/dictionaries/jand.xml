@@ -2,6 +2,7 @@
   <dictionary name="jand">
     <words>
       <w>peopleware</w>
+      <w>querystring</w>
     </words>
   </dictionary>
 </component>

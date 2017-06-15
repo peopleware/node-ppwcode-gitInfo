@@ -19,6 +19,7 @@
 const program = require("commander");
 const GitInfo = require("./GitInfo");
 const tagGitRepo = require("./tagGitRepo");
+const formatBranchAsEnvironmentName = require("./formatBranchAsEnvironmentName");
 const packageVersion = require("pkginfo")(module, "version");
 
 //noinspection JSCheckFunctionSignatures
@@ -78,6 +79,29 @@ program
         err => {
           if (err.message === tagGitRepo.couldNotCreateTagMsg) {
             console.error("Could not create the tag on the git repository. Does it already exist?");
+            process.exitCode = 1;
+            return false;
+          }
+          throw err;
+        }
+      );
+  });
+
+program
+  .command("branch-as-environment [path]")
+  .alias("b")
+  .description("Return the branch currently checked-out in the highest git working copy above [path], formatted "
+               + "so that it can be used as an environment name, i.e. /\//-/g, and url-escaped. "
+               + "cwd is the default for [path].")
+  .action(function(path) {
+    const gitBasePath = path || process.cwd();
+    GitInfo
+      .createForHighestGitDir(gitBasePath)
+      .done(
+        (gitInfo) => console.log(formatBranchAsEnvironmentName(gitInfo.branch)),
+        (err) => {
+          if (err.message === GitInfo.noGitDirectoryMsg) {
+            console.error("No git directory found above " + path);
             process.exitCode = 1;
             return false;
           }
