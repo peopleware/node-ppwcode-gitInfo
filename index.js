@@ -62,6 +62,11 @@ program
   .description("Tag the highest git working copy and repository above [path] with [tagName]. "
                + "cwd is the default for [path]. The tag is not pushed!")
   .action(function(tagName, path) {
+    if (!tagName || tagName === "") {
+      console.error("tagName is mandatory");
+      process.exitCode = 1;
+      return false;
+    }
     const gitBasePath = path || process.cwd();
     GitInfo
       .highestGitDirPath(gitBasePath)
