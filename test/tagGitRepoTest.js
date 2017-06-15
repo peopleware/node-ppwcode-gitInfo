@@ -20,7 +20,7 @@ const path = require("path");
 const tagGitRepo = require("../tagGitRepo");
 const GitInfo = require("../GitInfo");
 
-const someRepoPaths = [path.dirname(path.dirname(path.dirname(path.dirname(__filename)))), "/repo/does/not/exist"];
+const someRepoPaths = [path.dirname(path.dirname(__filename)), "/repo/does/not/exist"];
 const aTagName = "automated_test/tagGitRepo/" + Date.now();
 
 describe("tagGitRepo", function() {
