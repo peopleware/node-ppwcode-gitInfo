@@ -1,12 +1,20 @@
 [Node.js] package to get information about the current status of a git working copy.
 
+To install, do
+
+    > yarn add \@ppwcode/node-gitinfo
+    
+or
+    
+    > npm install --save \@ppwcode/node-gitinfo
+
 When used in other code, use
 
-    const GitInfo = require("@ppwcode/node-ppwcode-gitinfo/GitInfo);
+    const GitInfo = require("@ppwcode/node-gitinfo/GitInfo);
      
 You can tag with
      
-    const tagGitRepo = require("@ppwcode/node-ppwcode-gitinfo/tagGitRepo);
+    const tagGitRepo = require("@ppwcode/node-gitinfo/tagGitRepo);
      
 `index.js` is a CLI tool that uses this code. See
      
