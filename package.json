@@ -1,6 +1,6 @@
 {
   "name": "@ppwcode/node-gitInfo",
-  "version": "1.0.0",
+  "version": "0.0.2-pre",
   "description": "Get information about the current state of the highest git working copy we are in",
   "main": "GitInfo.js",
   "keywords": [
