@@ -10,7 +10,7 @@ or
 
 When used in other code, use
 
-    const GitInfo = require("@ppwcode/node-gitinfo/GitInfo);
+    const GitInfo = require("@ppwcode/node-gitinfo);
      
 You can tag with
      
