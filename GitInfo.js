@@ -336,7 +336,7 @@ GitInfo.create = new Contract({
     .open(gitDirPath)
     .catch(() => {throw new Error(gitDirPath + " is not a git directory");})
     .then(repository => {
-      //noinspection JSCheckFunctionSignatures
+      //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
       return Q.object({
         sha: repository
           .getHeadCommit()
