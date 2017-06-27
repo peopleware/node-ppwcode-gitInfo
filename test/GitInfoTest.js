@@ -95,6 +95,7 @@ describe("GitInfo", function() {
                     [path, sha, branch.name, originUrl, changes, originBranchSha, result]
                   );
                   util.validateInvariants(result);
+                  console.log("%j", result);
                 });
             });
           });

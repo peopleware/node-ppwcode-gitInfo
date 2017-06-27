@@ -51,6 +51,17 @@ class GitInfo {
       && typeof this.isSave === "boolean"
       && (this.isPrecious || this.isSave)
       && (!this.isPrecious || (this.isSave === (this.isClean && this.isPushed)))
+      && JSON.parse(JSON.stringify(this)).path === this.path
+      && JSON.parse(JSON.stringify(this)).sha === this.sha
+      && JSON.parse(JSON.stringify(this)).branch === this.branch
+      && JSON.parse(JSON.stringify(this)).originUrl === this.originUrl
+      && JSON.parse(JSON.stringify(this)).changes.every(e => this.changes.has(e))
+      && Array.from(this.changes).every(e => 0 <= JSON.parse(JSON.stringify(this)).changes.indexOf(e))
+      && JSON.parse(JSON.stringify(this)).originBranchSha === this.originBranchSha
+      && JSON.parse(JSON.stringify(this)).isClean === this.isClean
+      && JSON.parse(JSON.stringify(this)).isPushed === this.isPushed
+      && JSON.parse(JSON.stringify(this)).isPrecious === this.isPrecious
+      && JSON.parse(JSON.stringify(this)).isSave === this.isSave;
   }
 
   /**
