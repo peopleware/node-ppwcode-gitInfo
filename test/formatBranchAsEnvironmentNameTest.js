@@ -33,7 +33,7 @@ const someBranchNames = [
 
 describe("formatBranchAsEnvironmentName", function() {
   someBranchNames.forEach(branchName => {
-    it("behaves as expected", function() {
+    it("behaves as expected for branch name \"" + branchName + "\"", function() {
       console.log(formatBranchAsEnvironmentName(branchName));
     });
   });

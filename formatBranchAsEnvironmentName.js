@@ -17,17 +17,41 @@
 const Contract = require("@toryt/contracts-ii");
 const querystring = require("querystring");
 
+const masterBranchName = "master";
+const defaultEnvironmentName = "default";
+
+/**
+ * Transforms a git branch name into a string that can be used as a Terraform environment name.
+ * Falsy inputs return {@code undefined}. When the branch name is &quot;master&quot;, &quot;default&quot; is returned.
+ * &quot;default&quot; cannot be used as branch name.
+ *
+ * @param {string} branch - string representing a git branch name, possibly compound (using &quot;/&quot;,
+ *                          possibly falsy
+ */
 const formatBranchAsEnvironmentName = new Contract({
   pre: [
-    branch => !branch || typeof branch === "string"
+    branch => !branch || typeof branch === "string",
+    branch => branch !== formatBranchAsEnvironmentName.defaultEnvironmentName
   ],
   post: [
-    (branch, result) => !branch || querystring.unescape(result) === branch.replace(/\//g, "-"),
+    (branch, result) => !branch
+                        || branch === formatBranchAsEnvironmentName.masterBranchName
+                        || querystring.unescape(result) === branch.replace(/\//g, "-"),
+    (branch, result) => branch !== formatBranchAsEnvironmentName.masterBranchName
+                        || result === formatBranchAsEnvironmentName.defaultEnvironmentName,
     (branch, result) => !!branch || result === undefined
   ],
   exception: [() => false]
 }).implementation(function(branch) {
-  return !branch ? undefined : querystring.escape(branch.split("/").join("-"));
+  return !branch
+    ? undefined
+    : (branch === masterBranchName
+        ? defaultEnvironmentName
+        : querystring.escape(branch.split("/").join("-")));
 });
 
+formatBranchAsEnvironmentName.masterBranchName = masterBranchName;
+formatBranchAsEnvironmentName.defaultEnvironmentName = defaultEnvironmentName;
+
 module.exports = formatBranchAsEnvironmentName;
+
