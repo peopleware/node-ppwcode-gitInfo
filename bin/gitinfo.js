@@ -17,9 +17,8 @@
  */
 
 const program = require("commander");
-const GitInfo = require("./GitInfo");
-const tagGitRepo = require("./tagGitRepo");
-const formatBranchAsEnvironmentName = require("./formatBranchAsEnvironmentName");
+const GitInfo = require("../GitInfo");
+const tagGitRepo = require("../tagGitRepo");
 const packageVersion = require("pkginfo")(module, "version");
 
 //noinspection JSCheckFunctionSignatures
@@ -98,7 +97,7 @@ program
     GitInfo
       .createForHighestGitDir(gitBasePath)
       .done(
-        (gitInfo) => console.log(formatBranchAsEnvironmentName(gitInfo.branch)),
+        (gitInfo) => console.log(gitInfo.environment),
         (err) => {
           if (err.message === GitInfo.noGitDirectoryMsg) {
             console.error("No git directory found above " + path);

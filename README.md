@@ -19,13 +19,13 @@ You can tag with
      
     const tagGitRepo = require("@ppwcode/node-gitinfo/tagGitRepo);
      
-`index.js` is a CLI tool that uses this code. See
+`gitinfo.js` is a CLI tool that uses this code. See
      
-     > node ./index.js -h
+     > node ./bin/gitinfo.js -h
      
-for help.
+for help. This program is installed in npm as `gitinfo`.
 
-     > node ./index.js gi
+     > node ./bin/gitinfo.js gi
      
 is intended for use in a [Terraform external data source provider]. It returns JSON.
 

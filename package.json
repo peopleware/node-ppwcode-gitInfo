@@ -4,7 +4,7 @@
   "description": "Get information about the current state of the highest git working copy we are in",
   "main": "GitInfo.js",
   "bin": {
-    "gitinfo": "./index.js"
+    "gitinfo": "./bin/gitinfo.js"
   },
   "keywords": [
     "git",
