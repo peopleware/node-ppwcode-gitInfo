@@ -1,5 +1,8 @@
 [Node.js] package to get information about the current status of a git working copy.
 
+This package was created to be used in the context of [Terraform]. See [terraform-ppwcode-modules].
+
+
 To install, do
 
     > yarn add \@ppwcode/node-gitinfo
@@ -29,3 +32,4 @@ is intended for use in a [Terraform external data source provider]. It returns J
 [Terraform]: https://peopleware.atlassian.net/wiki/x/CwAvBg
 [Node.js]: https://nodejs.org
 [Terraform external data source provider]: https://www.terraform.io/docs/providers/external/data_source.html
+[terraform-ppwcode-modules]: https://github.com/peopleware/terraform-ppwcode-modules
