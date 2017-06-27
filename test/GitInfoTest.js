@@ -23,11 +23,15 @@ const ConditionError = require("@toryt/contracts-ii/src/II/ConditionError");
 const Git = require("nodegit");
 
 const thisGitRepoRoot = path.dirname(path.dirname(__dirname));
+//noinspection SpellCheckingInspection
 const someBranchNames = [
   "master",
   "nested/branch/name",
   "dev",
-  "development"
+  "development",
+  "personal/jack/experiment/subject-0",
+  "validate/the/vëry/long/𝕭ranch/ℕame/⩠",
+  "validate 1/some very∆∆ weird name-That does'nt_probably \\%2f  _ _ __-- exists"
 ];
 const preciousBranchNames = [
   false,

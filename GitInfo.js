@@ -19,6 +19,7 @@ const path = require("path");
 const fs = require("fs");
 const Q = require("./q2");
 const Git = require("nodegit");
+const querystring = require("querystring");
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
@@ -51,9 +52,16 @@ class GitInfo {
       && typeof this.isSave === "boolean"
       && (this.isPrecious || this.isSave)
       && (!this.isPrecious || (this.isSave === (this.isClean && this.isPushed)))
+      && (!this.branch
+          || this.branch === GitInfo.masterBranchName
+          || this.branch === GitInfo.defaultEnvironmentName
+          || querystring.unescape(this.environment) === this.branch.replace(/\//g, "-"))
+      && (this.branch !== GitInfo.masterBranchName || this.environment === GitInfo.defaultEnvironmentName)
+      && ((!!this.branch && this.branch !== GitInfo.defaultEnvironmentName) || this.environment === undefined)
       && JSON.parse(JSON.stringify(this)).path === this.path
       && JSON.parse(JSON.stringify(this)).sha === this.sha
       && JSON.parse(JSON.stringify(this)).branch === this.branch
+      && JSON.parse(JSON.stringify(this)).environment === this.environment
       && JSON.parse(JSON.stringify(this)).originUrl === this.originUrl
       && JSON.parse(JSON.stringify(this)).changes.every(e => this.changes.has(e))
       && Array.from(this.changes).every(e => 0 <= JSON.parse(JSON.stringify(this)).changes.indexOf(e))
@@ -112,6 +120,22 @@ class GitInfo {
    */
   get branch() {
     return this._branch;
+  }
+
+  /**
+   * A string that can be used as a Terraform environment name, derived from {@link #branch}.
+   * Falsy {@link #branch} values return {@code undefined}.
+   * When the {@link #branch} is &quot;master&quot;, &quot;default&quot; is returned.
+   * &quot;default&quot; cannot be used as branch name.
+   *
+   * @return {String?}
+   */
+  get environment() {
+    return !this._branch
+      ? undefined
+      : (this._branch === GitInfo.masterBranchName
+          ? GitInfo.defaultEnvironmentName
+          : querystring.escape(this._branch.split("/").join("-")));
   }
 
   /**
@@ -177,6 +201,7 @@ class GitInfo {
       path: this.path,
       sha: this.sha,
       branch: this.branch,
+      environment: this.environment,
       originUrl: this.originUrl,
       changes: Array.from(this.changes),
       originBranchSha: this.originBranchSha,
@@ -226,6 +251,8 @@ GitInfo.preciousBranchNameFragments = ["prod", "staging", "stage", "test"];
 GitInfo.originRemoteName = "origin";
 GitInfo.gitRefsPattern = /^refs\/heads\/(.*)$/;
 GitInfo.gitOriginRefsPrefix = "refs\/remotes\/" + GitInfo.originRemoteName + "/";
+GitInfo.masterBranchName = "master";
+GitInfo.defaultEnvironmentName = "default";
 
 /**
  * Promise for the path of the directory of the highest git working copy {@code path} is in. This is the top most
