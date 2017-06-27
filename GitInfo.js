@@ -33,23 +33,24 @@ class GitInfo {
          creation of this object. */
       && typeof this.sha === "string"
       && GitInfo.shaRegExp.test(this.sha)
-      && this.branch === undefined || (typeof this.branch === "string" && !!this.branch)
-      && this.originUrl === undefined || (typeof this.originUrl === "string" && !!this.originUrl)
+      && (this.branch === undefined || (typeof this.branch === "string" && !!this.branch))
+      && (this.originUrl === undefined || (typeof this.originUrl === "string" && !!this.originUrl))
       && this.changes instanceof Set
       && Array.from(this.changes).every(path => typeof path === "string" && !!path)
-      && this.originBranchSha === undefined || typeof this.originBranchSha === "string"
-      && this.originBranchSha === undefined || GitInfo.shaRegExp.test(this.originBranchSha)
+      && (this.originBranchSha === undefined || typeof this.originBranchSha === "string")
+      && (this.originBranchSha === undefined || GitInfo.shaRegExp.test(this.originBranchSha))
       && typeof this.isClean === "boolean"
       && this.isClean === (this.changes.size === 0)
       && typeof this.isPushed === "boolean"
       && this.isPushed === (this.originBranchSha === this.sha)
       && typeof this.isPrecious === "boolean"
-      && this.branch || this.isPrecious
-      && GitInfo.preciousBranchNameFragments.every(fragment => this.branch.indexOf(fragment) < 0) || this.isPrecious
+      && (this.branch || this.isPrecious)
+      && (!this.branch
+          || GitInfo.preciousBranchNameFragments.every(fragment => this.branch.indexOf(fragment) < 0)
+          || this.isPrecious)
       && typeof this.isSave === "boolean"
-      && this.isPrecious || this.isSave
-      && this.isClean || !this.isSave
-      && this.isPushed || !this.isSave
+      && (this.isPrecious || this.isSave)
+      && (!this.isPrecious || (this.isSave === (this.isClean && this.isPushed)))
   }
 
   /**
@@ -153,7 +154,8 @@ class GitInfo {
 
   /**
    * This represents a git repo that is save.
-   * It is clean, all commits are pushed, and it is in a precious branch.
+   * A precious branch must be clean, and all commits must be pushed.
+   * A non-precious branch is always save.
    */
   get isSave() {
     return !this.isPrecious || (this.isClean && this.isPushed)
