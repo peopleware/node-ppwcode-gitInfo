@@ -77,12 +77,12 @@ class GitInfo {
    * @param {String} path - path to the git repository represented by the new instance;
    *                        should be a path to a directory that contains a {@code .git/} folder
    * @param {String} sha - sha of the current commit of the checked-out repository
-   * @param {String?} branch - name of the current checked-out branch; might be {@code undefined}
-   * @param {String?} originUrl - url of the remote with name {@code origin} of the current checked-out branch;
+   * @param {string=} branch - name of the current checked-out branch; might be {@code undefined}
+   * @param {string=} originUrl - url of the remote with name {@code origin} of the current checked-out branch;
    *                              might be {@code undefined}
    * @param {Set<String>} changes - set of paths of files that are not committed in the working copy
    *                                referred to by {@code path}; files are deleted, new, or modified
-   * @param {String?} originBranchSha - sha of branch {@code branch} at remote with name {@code origin};
+   * @param {string=} originBranchSha - sha of branch {@code branch} at remote with name {@code origin};
    *                                    might be {@code undefined}
    */
   constructor (path, sha, branch, originUrl, changes, originBranchSha) {
@@ -115,7 +115,7 @@ class GitInfo {
   /**
    * Name of the current checked-out branch. Might be {@code undefined}.
    *
-   * @return {String?}
+   * @return {(string|undefined)}
    */
   get branch () {
     return this._branch
@@ -127,7 +127,7 @@ class GitInfo {
    * When the {@link #branch} is &quot;master&quot;, &quot;default&quot; is returned.
    * &quot;default&quot; cannot be used as branch name.
    *
-   * @return {String?}
+   * @return {(string|undefined)}
    */
   get environment () {
     return !this._branch
@@ -141,7 +141,7 @@ class GitInfo {
    * Url of the remote with name {@code origin} of the current checked-out branch.
    * Might be {@code undefined}.
    *
-   * @return {String?}
+   * @return {(string|undefined)}
    */
   get originUrl () {
     return this._originUrl
