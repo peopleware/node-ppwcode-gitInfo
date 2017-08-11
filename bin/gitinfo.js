@@ -90,7 +90,7 @@ program
   .command('branch-as-environment [path]')
   .alias('b')
   .description('Return the branch currently checked-out in the highest git working copy above [path], formatted ' +
-               'so that it can be used as an environment name, i.e. /\//-/g, and url-escaped. ' +
+               'so that it can be used as an environment name, i.e. /\\//-/g, and url-escaped. ' +
                'cwd is the default for [path].')
   .action(function (path) {
     const gitBasePath = path || process.cwd()
