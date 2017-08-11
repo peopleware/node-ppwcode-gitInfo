@@ -49,6 +49,7 @@ const preciousBranchNames = [
 ]
 // noinspection SpellCheckingInspection
 const aSha = 'b557eb5aabebf72f84ae9750be2ad1b7b6b43a4b'
+// noinspection SpellCheckingInspection
 const someShas = [aSha, '3268d7bc82d16d840f71ddfb5c8f5e42dea16f3b', null, undefined, '', 0, false]
 const someOriginUrls = [0, false, '', null, undefined, 'git@GitHub:peopleware/terraform-ppwcode-modules.git']
 const someChanges = [
@@ -147,7 +148,7 @@ describe('GitInfo', function () {
 
   describe('isNotClean', function () {
     it('should behave for all files in this repo', function () {
-      // noinspection JSUnresolvedVariable
+      // noinspection JSUnresolvedVariable,JSCheckFunctionSignatures
       return Q.all(
         Git
           .Repository

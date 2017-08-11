@@ -195,6 +195,7 @@ class GitInfo {
     return !this.isPrecious || (this.isClean && this.isPushed)
   }
 
+  // noinspection JSUnusedGlobalSymbols
   toJSON () {
     return {
       path: this.path,

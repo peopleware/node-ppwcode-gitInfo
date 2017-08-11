@@ -21,7 +21,6 @@ const GitInfo = require('../GitInfo')
 const tagGitRepo = require('../tagGitRepo')
 const packageVersion = require('pkginfo')(module, 'version')
 
-// noinspection JSCheckFunctionSignatures
 program
   .version(packageVersion)
 

@@ -29,6 +29,7 @@ describe('tagGitRepo', function () {
     someRepoPaths.forEach(function (path) {
       const tagName = aTagName
       it('creates the expected tag, or fails expected, for "' + path + '" and tag "' + tagName, function () {
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
         return tagGitRepo(path, tagName)
           .then(
             () => Git.Repository
@@ -40,6 +41,7 @@ describe('tagGitRepo', function () {
                     if (tags.indexOf(tagName) < 0) {
                       throw new Error('tag was not created as expected')
                     }
+                    // noinspection JSUnresolvedVariable
                     return Git.Tag.delete(repository, tagName)
                   })
               ),
