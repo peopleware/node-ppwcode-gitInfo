@@ -1,6 +1,6 @@
 {
   "name": "@ppwcode/node-gitinfo",
-  "version": "3.0.0",
+  "version": "2.0.1",
   "description": "Get information about the current state of the highest git working copy we are in",
   "main": "GitInfo.js",
   "bin": {
@@ -24,7 +24,7 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=8.2.1"
+    "node": ">=6.10.3"
   },
   "dependencies": {
     "@toryt/contracts-ii": "^1.2.0",
