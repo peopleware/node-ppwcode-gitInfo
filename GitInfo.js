@@ -74,13 +74,13 @@ class GitInfo {
   /**
    * Create a new GitInfo instance with the given properties.
    *
-   * @param {String} path - path to the git repository represented by the new instance;
+   * @param {string} path - path to the git repository represented by the new instance;
    *                        should be a path to a directory that contains a {@code .git/} folder
-   * @param {String} sha - sha of the current commit of the checked-out repository
+   * @param {string} sha - sha of the current commit of the checked-out repository
    * @param {string=} branch - name of the current checked-out branch; might be {@code undefined}
    * @param {string=} originUrl - url of the remote with name {@code origin} of the current checked-out branch;
    *                              might be {@code undefined}
-   * @param {Set<String>} changes - set of paths of files that are not committed in the working copy
+   * @param {Set<string>} changes - set of paths of files that are not committed in the working copy
    *                                referred to by {@code path}; files are deleted, new, or modified
    * @param {string=} originBranchSha - sha of branch {@code branch} at remote with name {@code origin};
    *                                    might be {@code undefined}
@@ -97,7 +97,7 @@ class GitInfo {
   /**
    * Path to the git repository represented by this.
    *
-   * @return {String}
+   * @return {string}
    */
   get path () {
     return this._path
@@ -106,7 +106,7 @@ class GitInfo {
   /**
    * Sha of the current commit of the checked-out repository.
    *
-   * @return {String}
+   * @return {string}
    */
   get sha () {
     return this._sha
@@ -151,7 +151,7 @@ class GitInfo {
    * Set of paths of files that are not committed in the working copy referred to by {@code path}.
    * Files are deleted, new, or modified.
    *
-   * @return {Set<String>}
+   * @return {Set<string>}
    */
   get changes () {
     return new Set(this._changes)

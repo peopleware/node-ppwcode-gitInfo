@@ -25,7 +25,7 @@ const Q = require('./q2')
  * The resolution value is not specified.
  *
  * @param {string} tag - the tag to be used
- * @param {String} path - path to the git repository to tag;
+ * @param {string} path - path to the git repository to tag;
  *                        should be a path to a directory that contains a {@code .git/} folder
  */
 const tagGitRepo = new Contract({
