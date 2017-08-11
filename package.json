@@ -24,7 +24,7 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=6.10.3"
+    "node": ">=8.2.1"
   },
   "dependencies": {
     "@toryt/contracts-ii": "^1.2.0",
@@ -39,6 +39,6 @@
     "standard": "^10.0.3"
   },
   "scripts": {
-    "test": "mocha test/**/*Test.js"
+    "test": "standard & mocha test/**/*Test.js"
   }
 }
