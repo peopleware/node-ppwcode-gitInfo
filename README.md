@@ -29,7 +29,18 @@ for help. This program is installed in npm as `gitinfo`.
      
 is intended for use in a [Terraform external data source provider]. It returns JSON.
 
+
+
+
+Style
+=====
+
+This code uses [Standard] coding style.
+
+
+
 [Terraform]: https://peopleware.atlassian.net/wiki/x/CwAvBg
 [Node.js]: https://nodejs.org
 [Terraform external data source provider]: https://www.terraform.io/docs/providers/external/data_source.html
 [terraform-ppwcode-modules]: https://github.com/peopleware/terraform-ppwcode-modules
+[Standard]: https://standardjs.com
