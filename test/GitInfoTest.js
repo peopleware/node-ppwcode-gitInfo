@@ -135,7 +135,7 @@ describe('GitInfo', function () {
               Q.nfcall(fs.access, p, 'rw')
                 .then(
                   shouldNotExist.bind(undefined, p),
-                  (err) => true
+                  () => true // errors are good, and what we expect
                 )
             )
             intermediate = path.dirname(intermediate)

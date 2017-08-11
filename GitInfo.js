@@ -283,7 +283,7 @@ GitInfo.highestGitDirPath = new Contract({
         exception: [() => false]
       }).implementation(highestGitDirPath => highestGitDirPath),
       new Contract({
-        pre: [(err) => false],
+        pre: [() => false], // should not be called
         post: [() => false],
         exception: [(err1, err2) => err1 === err2]
       }).implementation(err => { throw err })
