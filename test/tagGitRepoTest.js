@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+/* global describe, it */
+
 const Git = require('nodegit')
-const Q = require('../q2')
 const path = require('path')
 const tagGitRepo = require('../tagGitRepo')
 const GitInfo = require('../GitInfo')

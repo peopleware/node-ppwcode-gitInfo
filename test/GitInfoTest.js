@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* global describe, it */
+
 const GitInfo = require('../GitInfo')
 const util = require('./_util')
 const path = require('path')

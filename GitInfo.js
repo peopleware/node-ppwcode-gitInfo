@@ -248,7 +248,7 @@ GitInfo.shaRegExp = /^[a-f0-9]{40}$/
 GitInfo.preciousBranchNameFragments = ['prod', 'staging', 'stage', 'test']
 GitInfo.originRemoteName = 'origin'
 GitInfo.gitRefsPattern = /^refs\/heads\/(.*)$/
-GitInfo.gitOriginRefsPrefix = 'refs\/remotes\/' + GitInfo.originRemoteName + '/'
+GitInfo.gitOriginRefsPrefix = 'refs/remotes/' + GitInfo.originRemoteName + '/'
 GitInfo.masterBranchName = 'master'
 GitInfo.defaultEnvironmentName = 'default'
 
