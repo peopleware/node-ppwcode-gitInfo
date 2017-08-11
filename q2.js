@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Q = require("q");
+const Q = require('q')
 
 /**
  * Turns an object of promises into a promise for an object.  If any of
@@ -23,21 +23,21 @@ const Q = require("q");
  *                            promises for values)
  * @return {object|Promise<object>} a promise for an array of the corresponding values
  */
-function object(promises) {
+function object (promises) {
   if (!promises) {
-    return promises;
+    return promises
   }
   return Q.all(Object.keys(promises).map((key) => Q.when(promises[key], (value) => ({key, value}))))
           .then((kvPairs) => kvPairs.reduce(
             (acc, kvPair) => {
-              acc[kvPair.key] = kvPair.value;
-              return acc;
+              acc[kvPair.key] = kvPair.value
+              return acc
             },
             {}
-          ));
+          ))
 }
 
 // monkey patch object on q
-Q.object = object;
+Q.object = object
 
-module.exports = Q;
+module.exports = Q

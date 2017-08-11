@@ -14,62 +14,61 @@
  * limitations under the License.
  */
 
-const Contract = require("@toryt/contracts-ii");
-const path = require("path");
-const fs = require("fs");
-const Q = require("./q2");
-const Git = require("nodegit");
-const querystring = require("querystring");
+const Contract = require('@toryt/contracts-ii')
+const path = require('path')
+const fs = require('fs')
+const Q = require('./q2')
+const Git = require('nodegit')
+const querystring = require('querystring')
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
  */
 class GitInfo {
-
-  get invariants() {
-    return typeof this.path === "string"
-      && !!this.path
+  get invariants () {
+    return typeof this.path === 'string' &&
+      !!this.path &&
       /* We will not add an invariant that this path exists. 1) That can only be determined
          asynchronously, and we don't want that for invariants(). 2) The disk can be changed after
          creation of this object. */
-      && typeof this.sha === "string"
-      && GitInfo.shaRegExp.test(this.sha)
-      && (this.branch === undefined || (typeof this.branch === "string" && !!this.branch))
-      && (this.originUrl === undefined || (typeof this.originUrl === "string" && !!this.originUrl))
-      && this.changes instanceof Set
-      && Array.from(this.changes).every(path => typeof path === "string" && !!path)
-      && (this.originBranchSha === undefined || typeof this.originBranchSha === "string")
-      && (this.originBranchSha === undefined || GitInfo.shaRegExp.test(this.originBranchSha))
-      && typeof this.isClean === "boolean"
-      && this.isClean === (this.changes.size === 0)
-      && typeof this.isPushed === "boolean"
-      && this.isPushed === (this.originBranchSha === this.sha)
-      && typeof this.isPrecious === "boolean"
-      && (this.branch || this.isPrecious)
-      && (!this.branch
-          || GitInfo.preciousBranchNameFragments.every(fragment => this.branch.indexOf(fragment) < 0)
-          || this.isPrecious)
-      && typeof this.isSave === "boolean"
-      && (this.isPrecious || this.isSave)
-      && (!this.isPrecious || (this.isSave === (this.isClean && this.isPushed)))
-      && (!this.branch
-          || this.branch === GitInfo.masterBranchName
-          || this.branch === GitInfo.defaultEnvironmentName
-          || querystring.unescape(this.environment) === this.branch.replace(/\//g, "-"))
-      && (this.branch !== GitInfo.masterBranchName || this.environment === GitInfo.defaultEnvironmentName)
-      && ((!!this.branch && this.branch !== GitInfo.defaultEnvironmentName) || this.environment === undefined)
-      && JSON.parse(JSON.stringify(this)).path === this.path
-      && JSON.parse(JSON.stringify(this)).sha === this.sha
-      && JSON.parse(JSON.stringify(this)).branch === this.branch
-      && JSON.parse(JSON.stringify(this)).environment === this.environment
-      && JSON.parse(JSON.stringify(this)).originUrl === this.originUrl
-      && JSON.parse(JSON.stringify(this)).changes.every(e => this.changes.has(e))
-      && Array.from(this.changes).every(e => 0 <= JSON.parse(JSON.stringify(this)).changes.indexOf(e))
-      && JSON.parse(JSON.stringify(this)).originBranchSha === this.originBranchSha
-      && JSON.parse(JSON.stringify(this)).isClean === this.isClean
-      && JSON.parse(JSON.stringify(this)).isPushed === this.isPushed
-      && JSON.parse(JSON.stringify(this)).isPrecious === this.isPrecious
-      && JSON.parse(JSON.stringify(this)).isSave === this.isSave;
+      typeof this.sha === 'string' &&
+      GitInfo.shaRegExp.test(this.sha) &&
+      (this.branch === undefined || (typeof this.branch === 'string' && !!this.branch)) &&
+      (this.originUrl === undefined || (typeof this.originUrl === 'string' && !!this.originUrl)) &&
+      this.changes instanceof Set &&
+      Array.from(this.changes).every(path => typeof path === 'string' && !!path) &&
+      (this.originBranchSha === undefined || typeof this.originBranchSha === 'string') &&
+      (this.originBranchSha === undefined || GitInfo.shaRegExp.test(this.originBranchSha)) &&
+      typeof this.isClean === 'boolean' &&
+      this.isClean === (this.changes.size === 0) &&
+      typeof this.isPushed === 'boolean' &&
+      this.isPushed === (this.originBranchSha === this.sha) &&
+      typeof this.isPrecious === 'boolean' &&
+      (this.branch || this.isPrecious) &&
+      (!this.branch ||
+          GitInfo.preciousBranchNameFragments.every(fragment => this.branch.indexOf(fragment) < 0) ||
+          this.isPrecious) &&
+      typeof this.isSave === 'boolean' &&
+      (this.isPrecious || this.isSave) &&
+      (!this.isPrecious || (this.isSave === (this.isClean && this.isPushed))) &&
+      (!this.branch ||
+          this.branch === GitInfo.masterBranchName ||
+          this.branch === GitInfo.defaultEnvironmentName ||
+          querystring.unescape(this.environment) === this.branch.replace(/\//g, '-')) &&
+      (this.branch !== GitInfo.masterBranchName || this.environment === GitInfo.defaultEnvironmentName) &&
+      ((!!this.branch && this.branch !== GitInfo.defaultEnvironmentName) || this.environment === undefined) &&
+      JSON.parse(JSON.stringify(this)).path === this.path &&
+      JSON.parse(JSON.stringify(this)).sha === this.sha &&
+      JSON.parse(JSON.stringify(this)).branch === this.branch &&
+      JSON.parse(JSON.stringify(this)).environment === this.environment &&
+      JSON.parse(JSON.stringify(this)).originUrl === this.originUrl &&
+      JSON.parse(JSON.stringify(this)).changes.every(e => this.changes.has(e)) &&
+      Array.from(this.changes).every(e => JSON.parse(JSON.stringify(this)).changes.indexOf(e) >= 0) &&
+      JSON.parse(JSON.stringify(this)).originBranchSha === this.originBranchSha &&
+      JSON.parse(JSON.stringify(this)).isClean === this.isClean &&
+      JSON.parse(JSON.stringify(this)).isPushed === this.isPushed &&
+      JSON.parse(JSON.stringify(this)).isPrecious === this.isPrecious &&
+      JSON.parse(JSON.stringify(this)).isSave === this.isSave
   }
 
   /**
@@ -86,13 +85,13 @@ class GitInfo {
    * @param {String?} originBranchSha - sha of branch {@code branch} at remote with name {@code origin};
    *                                    might be {@code undefined}
    */
-  constructor(path, sha, branch, originUrl, changes, originBranchSha) {
-    this._path = path;
-    this._sha = sha;
-    this._branch = branch || undefined;
-    this._originUrl = originUrl || undefined;
-    this._changes = new Set(changes);
-    this._originBranchSha = originBranchSha || undefined;
+  constructor (path, sha, branch, originUrl, changes, originBranchSha) {
+    this._path = path
+    this._sha = sha
+    this._branch = branch || undefined
+    this._originUrl = originUrl || undefined
+    this._changes = new Set(changes)
+    this._originBranchSha = originBranchSha || undefined
   }
 
   /**
@@ -100,8 +99,8 @@ class GitInfo {
    *
    * @return {String}
    */
-  get path() {
-    return this._path;
+  get path () {
+    return this._path
   }
 
   /**
@@ -109,8 +108,8 @@ class GitInfo {
    *
    * @return {String}
    */
-  get sha() {
-    return this._sha;
+  get sha () {
+    return this._sha
   }
 
   /**
@@ -118,8 +117,8 @@ class GitInfo {
    *
    * @return {String?}
    */
-  get branch() {
-    return this._branch;
+  get branch () {
+    return this._branch
   }
 
   /**
@@ -130,12 +129,12 @@ class GitInfo {
    *
    * @return {String?}
    */
-  get environment() {
+  get environment () {
     return !this._branch
       ? undefined
       : (this._branch === GitInfo.masterBranchName
           ? GitInfo.defaultEnvironmentName
-          : querystring.escape(this._branch.split("/").join("-")));
+          : querystring.escape(this._branch.split('/').join('-')))
   }
 
   /**
@@ -144,8 +143,8 @@ class GitInfo {
    *
    * @return {String?}
    */
-  get originUrl() {
-    return this._originUrl;
+  get originUrl () {
+    return this._originUrl
   }
 
   /**
@@ -154,37 +153,37 @@ class GitInfo {
    *
    * @return {Set<String>}
    */
-  get changes() {
-    return new Set(this._changes);
+  get changes () {
+    return new Set(this._changes)
   }
 
   /**
    * Sha of branch {@link #branch} at remote with name {@code origin}. Might be {@code undefined}.
    */
-  get originBranchSha() {
-    return this._originBranchSha;
+  get originBranchSha () {
+    return this._originBranchSha
   }
 
   /**
    * This represents a clean git repo working copy.
    */
-  get isClean() {
-    return this.changes.size === 0;
+  get isClean () {
+    return this.changes.size === 0
   }
 
   /**
    * This is pushed, i.e., there is a {@link #originBranchSha}, and it is the same as {@link #sha}.
    */
-  get isPushed() {
-    return this.originBranchSha === this.sha;
+  get isPushed () {
+    return this.originBranchSha === this.sha
   }
 
   /**
    * This represents a git repo, of which a precious branch is checked out.
    * No branch is precious too.
    */
-  get isPrecious() {
-    return !this.branch || GitInfo.preciousBranchNameFragments.some(fragment => 0 <= this.branch.indexOf(fragment));
+  get isPrecious () {
+    return !this.branch || GitInfo.preciousBranchNameFragments.some(fragment => this.branch.indexOf(fragment) >= 0)
   }
 
   /**
@@ -192,11 +191,11 @@ class GitInfo {
    * A precious branch must be clean, and all commits must be pushed.
    * A non-precious branch is always save.
    */
-  get isSave() {
+  get isSave () {
     return !this.isPrecious || (this.isClean && this.isPushed)
   }
 
-  toJSON() {
+  toJSON () {
     return {
       path: this.path,
       sha: this.sha,
@@ -209,23 +208,22 @@ class GitInfo {
       isPushed: this.isPushed,
       isPrecious: this.isPrecious,
       isSave: this.isSave
-    };
+    }
   }
-
 }
 
 GitInfo.constructorContract = new Contract({
   pre: [
-    (path, sha, branch, originUrl, changes, originBranchSha) => typeof path === "string",
+    (path, sha, branch, originUrl, changes, originBranchSha) => typeof path === 'string',
     (path, sha, branch, originUrl, changes, originBranchSha) => !!path,
-    (path, sha, branch, originUrl, changes, originBranchSha) => typeof sha === "string",
+    (path, sha, branch, originUrl, changes, originBranchSha) => typeof sha === 'string',
     (path, sha, branch, originUrl, changes, originBranchSha) => GitInfo.shaRegExp.test(sha),
-    (path, sha, branch, originUrl, changes, originBranchSha) => !branch || typeof branch === "string",
-    (path, sha, branch, originUrl, changes, originBranchSha) => !originUrl || typeof originUrl === "string",
+    (path, sha, branch, originUrl, changes, originBranchSha) => !branch || typeof branch === 'string',
+    (path, sha, branch, originUrl, changes, originBranchSha) => !originUrl || typeof originUrl === 'string',
     (path, sha, branch, originUrl, changes, originBranchSha) => changes instanceof Set,
     (path, sha, branch, originUrl, changes, originBranchSha) =>
-      Array.from(changes).every(path => typeof path === "string" && !!path),
-    (path, sha, branch, originUrl, changes, originBranchSha) => !originBranchSha || typeof originBranchSha === "string",
+      Array.from(changes).every(path => typeof path === 'string' && !!path),
+    (path, sha, branch, originUrl, changes, originBranchSha) => !originBranchSha || typeof originBranchSha === 'string',
     (path, sha, branch, originUrl, changes, originBranchSha) =>
       !originBranchSha || GitInfo.shaRegExp.test(originBranchSha)
   ],
@@ -244,15 +242,15 @@ GitInfo.constructorContract = new Contract({
       !originBranchSha || result.originBranchSha === originBranchSha
   ],
   exception: [() => false]
-});
+})
 
-GitInfo.shaRegExp = /^[a-f0-9]{40}$/;
-GitInfo.preciousBranchNameFragments = ["prod", "staging", "stage", "test"];
-GitInfo.originRemoteName = "origin";
-GitInfo.gitRefsPattern = /^refs\/heads\/(.*)$/;
-GitInfo.gitOriginRefsPrefix = "refs\/remotes\/" + GitInfo.originRemoteName + "/";
-GitInfo.masterBranchName = "master";
-GitInfo.defaultEnvironmentName = "default";
+GitInfo.shaRegExp = /^[a-f0-9]{40}$/
+GitInfo.preciousBranchNameFragments = ['prod', 'staging', 'stage', 'test']
+GitInfo.originRemoteName = 'origin'
+GitInfo.gitRefsPattern = /^refs\/heads\/(.*)$/
+GitInfo.gitOriginRefsPrefix = 'refs\/remotes\/' + GitInfo.originRemoteName + '/'
+GitInfo.masterBranchName = 'master'
+GitInfo.defaultEnvironmentName = 'default'
 
 /**
  * Promise for the path of the directory of the highest git working copy {@code path} is in. This is the top most
@@ -260,7 +258,7 @@ GitInfo.defaultEnvironmentName = "default";
  */
 GitInfo.highestGitDirPath = new Contract({
   pre: [
-    (dirPath) => typeof dirPath === "string"
+    (dirPath) => typeof dirPath === 'string'
   ],
   post: [
     (dirPath, result) => Q.isPromiseAlike(result)
@@ -268,43 +266,43 @@ GitInfo.highestGitDirPath = new Contract({
   exception: [() => false]
 })
 .implementation(dirPath => {
-  const parts = dirPath.split(path.sep);
-  const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep));
-  return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({dir: dir, name: ".git"}), "rw")
+  const parts = dirPath.split(path.sep)
+  const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
+  return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({dir: dir, name: '.git'}), 'rw')
                                 .then(() => dir)
                                 .catch(() => undefined)))
     .then(gitDirs => gitDirs.find(dir => !!dir))
     .then(
       new Contract({
         pre: [
-          result => result === undefined || (typeof result === "string" && !!result),
+          result => result === undefined || (typeof result === 'string' && !!result),
           result => !result || dirPath.startsWith(result)
         ],
         post: [(highestGitDirPath, result) => result === highestGitDirPath],
         exception: [() => false]
       }).implementation(highestGitDirPath => highestGitDirPath),
       new Contract({
-        pre:       [(err) => false],
-        post:      [() => false],
+        pre: [(err) => false],
+        post: [() => false],
         exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => {throw err;})
-    );
-});
+      }).implementation(err => { throw err })
+    )
+})
 
 /**
  * Helper function to decide whether a NodeGit Status represents a clean or dirty file.
  */
 GitInfo.isNotClean = new Contract({
   pre: [
-    (status) => typeof status.isNew === "function",
-    (status) => typeof status.isModified === "function",
-    (status) => typeof status.isTypechange === "function",
-    (status) => typeof status.isRenamed === "function",
-    (status) => typeof status.isDeleted === "function",
-    (status) => typeof status.isIgnored === "function"
+    (status) => typeof status.isNew === 'function',
+    (status) => typeof status.isModified === 'function',
+    (status) => typeof status.isTypechange === 'function',
+    (status) => typeof status.isRenamed === 'function',
+    (status) => typeof status.isDeleted === 'function',
+    (status) => typeof status.isIgnored === 'function'
   ],
   post: [
-    (status, result) => typeof result === "boolean",
+    (status, result) => typeof result === 'boolean',
     (status, result) => !status.isNew() || result,
     (status, result) => !status.isModified() || result,
     (status, result) => !status.isTypechange() || result,
@@ -313,9 +311,9 @@ GitInfo.isNotClean = new Contract({
     (status, result) => !status.isIgnored() || !result
   ],
   exception: [() => false]
-}).implementation(function(status) {
-  return !!(status.isNew() || status.isModified() || status.isTypechange() || status.isRenamed() || status.isDeleted());
-});
+}).implementation(function (status) {
+  return !!(status.isNew() || status.isModified() || status.isTypechange() || status.isRenamed() || status.isDeleted())
+})
 
 /**
  * Promise for the git working copy information in {@code gitDirPath}.
@@ -323,20 +321,20 @@ GitInfo.isNotClean = new Contract({
  */
 GitInfo.create = new Contract({
   pre: [
-    (gitDirPath) => typeof gitDirPath === "string",
+    (gitDirPath) => typeof gitDirPath === 'string',
     (gitDirPath) => !!gitDirPath
   ],
-  post:      [
+  post: [
     (dirPath, result) => Q.isPromiseAlike(result)
   ],
   exception: [() => false]
-}).implementation(function(gitDirPath) {
-  //noinspection JSUnresolvedVariable
+}).implementation(function (gitDirPath) {
+  // noinspection JSUnresolvedVariable
   return Git.Repository
     .open(gitDirPath)
-    .catch(() => {throw new Error(gitDirPath + " is not a git directory");})
+    .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })
     .then(repository => {
-      //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
+      // noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
       return Q.object({
         sha: repository
           .getHeadCommit()
@@ -351,17 +349,17 @@ GitInfo.create = new Contract({
                       .then(
                         head => head.sha(),
                         err => {
-                          if (err && err.message && 0 <= err.message.indexOf("no reference found for shorthand")) {
+                          if (err && err.message && err.message.indexOf('no reference found for shorthand') >= 0) {
                             // the branch does not exist in the remote, so certainly not pushed
-                            return undefined;
+                            return undefined
                           }
-                          throw err;
+                          throw err
                         }
                       )
                   })),
         originUrl: repository
           .getRemote(GitInfo.originRemoteName)
-          .catch(() => new Error("remote \"" + GitInfo.originRemoteName + "\" does not exist"))
+          .catch(() => new Error('remote "' + GitInfo.originRemoteName + '" does not exist'))
           .then(remote => remote.url()),
         changes: repository
           .getStatus()
@@ -375,7 +373,7 @@ GitInfo.create = new Contract({
         params.originUrl,
         params.changes,
         params.branch.originSha
-      ));
+      ))
     })
     .then(
       new Contract({
@@ -390,33 +388,33 @@ GitInfo.create = new Contract({
         pre: [(err) => err instanceof Error],
         post: [() => false],
         exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => {throw err;})
-    );
-});
+      }).implementation(err => { throw err })
+    )
+})
 
-GitInfo.noGitDirectoryMsg = "NO GIT DIRECTORY";
+GitInfo.noGitDirectoryMsg = 'NO GIT DIRECTORY'
 
 /**
  * Promise for the git working copy information of the highest git working copy {@code path} is in.
  * The promise is rejected if there is no git working copy above {@code path}.
  */
 GitInfo.createForHighestGitDir = new Contract({
-  pre:       [
-    (path) => typeof path === "string",
+  pre: [
+    (path) => typeof path === 'string',
     (path) => !!path
   ],
-  post:      [
+  post: [
     (path, result) => Q.isPromiseAlike(result)
   ],
   exception: [() => false]
-}).implementation(function(path) {
+}).implementation(function (path) {
   return GitInfo
     .highestGitDirPath(path)
     .then(gitDirPath => {
       if (!gitDirPath) {
-        throw new Error(GitInfo.noGitDirectoryMsg);
+        throw new Error(GitInfo.noGitDirectoryMsg)
       }
-      return GitInfo.create(gitDirPath);
+      return GitInfo.create(gitDirPath)
     })
     .then(
       new Contract({
@@ -431,8 +429,8 @@ GitInfo.createForHighestGitDir = new Contract({
         pre: [(err) => err instanceof Error],
         post: [() => false],
         exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => {throw err;})
-    );
-});
+      }).implementation(err => { throw err })
+    )
+})
 
-module.exports = GitInfo;
+module.exports = GitInfo

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const Contract = require("@toryt/contracts-ii");
-const Git = require("nodegit");
-const GitInfo = require("./GitInfo");
-const Q = require("./q2");
+const Contract = require('@toryt/contracts-ii')
+const Git = require('nodegit')
+const GitInfo = require('./GitInfo')
+const Q = require('./q2')
 
 /**
  * Tag the git repository at {@code path} with {@code tagName}, and return a Promise
@@ -30,22 +30,22 @@ const Q = require("./q2");
  */
 const tagGitRepo = new Contract({
   pre: [
-    (path, tagName) => typeof path === "string",
+    (path, tagName) => typeof path === 'string',
     (path, tagName) => !!path,
-    (path, tagName) => typeof tagName === "string",
+    (path, tagName) => typeof tagName === 'string',
     (path, tagName) => !!tagName
   ],
   post: [
     (path, tagName, result) => Q.isPromiseAlike(result)
   ],
   exception: [() => false]
-}).implementation(function tagGit(path, tagName) {
-  const message = "tag with " + tagName;
-  //noinspection JSUnresolvedVariable
+}).implementation(function tagGit (path, tagName) {
+  const message = 'tag with ' + tagName
+  // noinspection JSUnresolvedVariable
   return Git.Repository
     .open(path)
     .catch(ignore => {
-      throw new Error(GitInfo.noGitDirectoryMsg);
+      throw new Error(GitInfo.noGitDirectoryMsg)
     })
     .then(repository =>
       repository
@@ -59,7 +59,7 @@ const tagGitRepo = new Contract({
           0
         ))
         .catch(ignore => {
-          throw new Error(tagGitRepo.couldNotCreateTagMsg);
+          throw new Error(tagGitRepo.couldNotCreateTagMsg)
         })
     )
     .catch(new Contract({
@@ -69,11 +69,11 @@ const tagGitRepo = new Contract({
       ],
       post: [() => false],
       exception: [(err1, err2) => err1 === err2]
-    }).implementation(function(err) {
-      throw err;
-    }));
-});
+    }).implementation(function (err) {
+      throw err
+    }))
+})
 
-tagGitRepo.couldNotCreateTagMsg = "COULD NOT CREATE TAG";
+tagGitRepo.couldNotCreateTagMsg = 'COULD NOT CREATE TAG'
 
-module.exports = tagGitRepo;
+module.exports = tagGitRepo

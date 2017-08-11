@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-const Git = require("nodegit");
-const Q = require("../q2");
-const path = require("path");
-const tagGitRepo = require("../tagGitRepo");
-const GitInfo = require("../GitInfo");
+const Git = require('nodegit')
+const Q = require('../q2')
+const path = require('path')
+const tagGitRepo = require('../tagGitRepo')
+const GitInfo = require('../GitInfo')
 
-const someRepoPaths = [path.dirname(path.dirname(__filename)), "/repo/does/not/exist"];
-const aTagName = "automated_test/tagGitRepo/" + Date.now();
+const someRepoPaths = [path.dirname(path.dirname(__filename)), '/repo/does/not/exist']
+const aTagName = 'automated_test/tagGitRepo/' + Date.now()
 
-describe("tagGitRepo", function() {
-  describe("tagGitRepo", function() {
-    someRepoPaths.forEach(function(path) {
-      const tagName = aTagName;
-      it("creates the expected tag, or fails expected, for \"" + path + "\" and tag \"" + tagName, function() {
+describe('tagGitRepo', function () {
+  describe('tagGitRepo', function () {
+    someRepoPaths.forEach(function (path) {
+      const tagName = aTagName
+      it('creates the expected tag, or fails expected, for "' + path + '" and tag "' + tagName, function () {
         return tagGitRepo(path, tagName)
           .then(
             () => Git.Repository
@@ -37,23 +37,21 @@ describe("tagGitRepo", function() {
                   .list(repository)
                   .then(tags => {
                     if (tags.indexOf(tagName) < 0) {
-                      throw new Error("tag was not created as expected");
+                      throw new Error('tag was not created as expected')
                     }
-                    return Git.Tag.delete(repository, tagName);
+                    return Git.Tag.delete(repository, tagName)
                   })
               ),
             (err) => {
-              console.log(err);
-              if (err instanceof Error
-                && (err.message === GitInfo.noGitDirectoryMsg || err.message === tagGitRepo.couldNotCreateTagMsg)) {
-                return true;
+              console.log(err)
+              if (err instanceof Error &&
+                (err.message === GitInfo.noGitDirectoryMsg || err.message === tagGitRepo.couldNotCreateTagMsg)) {
+                return true
               }
-              throw err;
+              throw err
             }
-          );
-      });
-    });
-  });
-});
-
-
+          )
+      })
+    })
+  })
+})
