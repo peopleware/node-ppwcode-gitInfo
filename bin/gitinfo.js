@@ -19,7 +19,8 @@
 const program = require('commander')
 const GitInfo = require('../GitInfo')
 const tagGitRepo = require('../tagGitRepo')
-const packageVersion = require('pkginfo')(module, 'version')
+require('pkginfo')(module, 'version') // add package version to module.exports
+const packageVersion = module.exports.version
 
 program
   .version(packageVersion)
