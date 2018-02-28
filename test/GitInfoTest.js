@@ -21,7 +21,7 @@ const util = require('./_util')
 const path = require('path')
 const fs = require('fs')
 const Q = require('../q2')
-const ConditionError = require('@toryt/contracts-ii/src/II/ConditionError')
+const ConditionError = require('@toryt/contracts-iii/src/III/ConditionError')
 const Git = require('nodegit')
 
 const thisGitRepoRoot = path.dirname(path.dirname(__dirname))
