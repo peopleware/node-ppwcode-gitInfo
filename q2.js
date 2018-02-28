@@ -28,13 +28,13 @@ function object (promises) {
     return promises
   }
   return Q.all(Object.keys(promises).map((key) => Q.when(promises[key], (value) => ({key, value}))))
-          .then((kvPairs) => kvPairs.reduce(
-            (acc, kvPair) => {
-              acc[kvPair.key] = kvPair.value
-              return acc
-            },
-            {}
-          ))
+    .then((kvPairs) => kvPairs.reduce(
+      (acc, kvPair) => {
+        acc[kvPair.key] = kvPair.value
+        return acc
+      },
+      {}
+    ))
 }
 
 // monkey patch object on q

@@ -133,8 +133,8 @@ class GitInfo {
     return !this._branch
       ? undefined
       : (this._branch === GitInfo.masterBranchName
-          ? GitInfo.defaultEnvironmentName
-          : querystring.escape(this._branch.split('/').join('-')))
+        ? GitInfo.defaultEnvironmentName
+        : querystring.escape(this._branch.split('/').join('-')))
   }
 
   /**
@@ -266,29 +266,29 @@ GitInfo.highestGitDirPath = new Contract({
   ],
   exception: [() => false]
 })
-.implementation(dirPath => {
-  const parts = dirPath.split(path.sep)
-  const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
-  return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({dir: dir, name: '.git'}), 'rw')
-                                .then(() => dir)
-                                .catch(() => undefined)))
-    .then(gitDirs => gitDirs.find(dir => !!dir))
-    .then(
-      new Contract({
-        pre: [
-          result => result === undefined || (typeof result === 'string' && !!result),
-          result => !result || dirPath.startsWith(result)
-        ],
-        post: [(highestGitDirPath, result) => result === highestGitDirPath],
-        exception: [() => false]
-      }).implementation(highestGitDirPath => highestGitDirPath),
-      new Contract({
-        pre: [() => false], // should not be called
-        post: [() => false],
-        exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => { throw err })
-    )
-})
+  .implementation(dirPath => {
+    const parts = dirPath.split(path.sep)
+    const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
+    return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({dir: dir, name: '.git'}), 'rw')
+      .then(() => dir)
+      .catch(() => undefined)))
+      .then(gitDirs => gitDirs.find(dir => !!dir))
+      .then(
+        new Contract({
+          pre: [
+            result => result === undefined || (typeof result === 'string' && !!result),
+            result => !result || dirPath.startsWith(result)
+          ],
+          post: [(highestGitDirPath, result) => result === highestGitDirPath],
+          exception: [() => false]
+        }).implementation(highestGitDirPath => highestGitDirPath),
+        new Contract({
+          pre: [() => false], // should not be called
+          post: [() => false],
+          exception: [(err1, err2) => err1 === err2]
+        }).implementation(err => { throw err })
+      )
+  })
 
 /**
  * Helper function to decide whether a NodeGit Status represents a clean or dirty file.
@@ -341,23 +341,23 @@ GitInfo.create = new Contract({
           .getHeadCommit()
           .then(head => head.sha()),
         branch: repository
-                  .getCurrentBranch()
-                  .then(reference => GitInfo.gitRefsPattern.exec(reference.name())[1])
-                  .then(branchName => Q.object({
-                    name: branchName,
-                    originSha: repository
-                      .getBranchCommit(GitInfo.gitOriginRefsPrefix + branchName)
-                      .then(
-                        head => head.sha(),
-                        err => {
-                          if (err && err.message && err.message.indexOf('no reference found for shorthand') >= 0) {
-                            // the branch does not exist in the remote, so certainly not pushed
-                            return undefined
-                          }
-                          throw err
-                        }
-                      )
-                  })),
+          .getCurrentBranch()
+          .then(reference => GitInfo.gitRefsPattern.exec(reference.name())[1])
+          .then(branchName => Q.object({
+            name: branchName,
+            originSha: repository
+              .getBranchCommit(GitInfo.gitOriginRefsPrefix + branchName)
+              .then(
+                head => head.sha(),
+                err => {
+                  if (err && err.message && err.message.indexOf('no reference found for shorthand') >= 0) {
+                    // the branch does not exist in the remote, so certainly not pushed
+                    return undefined
+                  }
+                  throw err
+                }
+              )
+          })),
         originUrl: repository
           .getRemote(GitInfo.originRemoteName)
           .catch(() => new Error('remote "' + GitInfo.originRemoteName + '" does not exist'))
@@ -365,16 +365,16 @@ GitInfo.create = new Contract({
         changes: repository
           .getStatus()
           .then(statuses =>
-                  new Set(statuses.filter(status => GitInfo.isNotClean(status)).map(status => status.path())))
+            new Set(statuses.filter(status => GitInfo.isNotClean(status)).map(status => status.path())))
       })
-      .then(params => new GitInfo(
-        gitDirPath,
-        params.sha,
-        params.branch.name,
-        params.originUrl,
-        params.changes,
-        params.branch.originSha
-      ))
+        .then(params => new GitInfo(
+          gitDirPath,
+          params.sha,
+          params.branch.name,
+          params.originUrl,
+          params.changes,
+          params.branch.originSha
+        ))
     })
     .then(
       new Contract({

@@ -87,23 +87,23 @@ describe('GitInfo', function () {
                 'originUrl === "' + originUrl + '", ' +
                 'changes: ' + changes.size + '", ' +
                 'originBranchSha: ' + originBranchSha,
-                function () {
-                  util.validateConditions(
-                    GitInfo.constructorContract.pre,
-                    [path, sha, branch.name, originUrl, changes, originBranchSha]
-                  )
-                  const result = new GitInfo(path, sha, branch.name, originUrl, changes, originBranchSha)
-                  console.log('branch %s precious? %s', result.branch, result.isPrecious)
-                  if (result.isPrecious !== branch.precious) {
-                    throw new Error('Expected precious to be ' + branch.precious + ' for ' + branch.name + ", but wasn't")
-                  }
-                  util.validateConditions(
-                    GitInfo.constructorContract.post,
-                    [path, sha, branch.name, originUrl, changes, originBranchSha, result]
-                  )
-                  util.validateInvariants(result)
-                  console.log('%j', result)
-                })
+              function () {
+                util.validateConditions(
+                  GitInfo.constructorContract.pre,
+                  [path, sha, branch.name, originUrl, changes, originBranchSha]
+                )
+                const result = new GitInfo(path, sha, branch.name, originUrl, changes, originBranchSha)
+                console.log('branch %s precious? %s', result.branch, result.isPrecious)
+                if (result.isPrecious !== branch.precious) {
+                  throw new Error('Expected precious to be ' + branch.precious + ' for ' + branch.name + ", but wasn't")
+                }
+                util.validateConditions(
+                  GitInfo.constructorContract.post,
+                  [path, sha, branch.name, originUrl, changes, originBranchSha, result]
+                )
+                util.validateInvariants(result)
+                console.log('%j', result)
+              })
             })
           })
         })
@@ -201,12 +201,12 @@ describe('GitInfo', function () {
           ),
           GitInfo.highestGitDirPath(dirPath)
         ])
-        .spread((gitInfo, gitDirPath) => {
-          if (gitInfo && gitInfo.path !== gitDirPath) {
-            throw new Error('path is not what was expected')
-          }
-          return gitInfo
-        })
+          .spread((gitInfo, gitDirPath) => {
+            if (gitInfo && gitInfo.path !== gitDirPath) {
+              throw new Error('path is not what was expected')
+            }
+            return gitInfo
+          })
       })
     })
   })
