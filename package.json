@@ -29,18 +29,18 @@
   "dependencies": {
     "@toryt/contracts-iii": "^3.1.0",
     "commander": "^2.12.2",
-    "nodegit": "^0.20.3",
+    "nodegit": "^0.21.0",
     "pkginfo": "^0.4.1",
     "q": "^1.5.1"
   },
   "devDependencies": {
-    "mocha": "^4.1.0",
+    "mocha": "^5.0.1",
     "npm-check": "^5.5.2",
     "nyc": "^11.4.1",
-    "standard": "^10.0.3"
+    "standard": "^11.0.0"
   },
   "scripts": {
-    "pretest": "npm-check -i mocha-reporter -i standard -i npm-check || exit 0",
+    "pretest": "npm-check || exit 0",
     "test": "standard && nyc mocha test/**/*Test.js"
   }
 }
