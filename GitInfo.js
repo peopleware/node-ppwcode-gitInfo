@@ -17,9 +17,10 @@
 const Contract = require('@toryt/contracts-iii')
 const path = require('path')
 const fs = require('fs')
-const Q = require('./q2')
+const Q = require('q')
 const Git = require('nodegit')
 const querystring = require('querystring')
+const all = require('promise-all')
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
@@ -336,14 +337,14 @@ GitInfo.create = new Contract({
     .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })
     .then(repository => {
       // noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
-      return Q.object({
+      return all({
         sha: repository
           .getHeadCommit()
           .then(head => head.sha()),
         branch: repository
           .getCurrentBranch()
           .then(reference => GitInfo.gitRefsPattern.exec(reference.name())[1])
-          .then(branchName => Q.object({
+          .then(branchName => all({
             name: branchName,
             originSha: repository
               .getBranchCommit(GitInfo.gitOriginRefsPrefix + branchName)

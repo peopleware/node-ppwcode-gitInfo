@@ -20,7 +20,7 @@ const GitInfo = require('../GitInfo')
 const util = require('./_util')
 const path = require('path')
 const fs = require('fs')
-const Q = require('../q2')
+const Q = require('q')
 const ConditionError = require('@toryt/contracts-iii/src/III/ConditionError')
 const Git = require('nodegit')
 

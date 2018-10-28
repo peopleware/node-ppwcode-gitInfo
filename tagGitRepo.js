@@ -17,7 +17,7 @@
 const Contract = require('@toryt/contracts-iii')
 const Git = require('nodegit')
 const GitInfo = require('./GitInfo')
-const Q = require('./q2')
+const Q = require('q')
 
 /**
  * Tag the git repository at {@code path} with {@code tagName}, and return a Promise
