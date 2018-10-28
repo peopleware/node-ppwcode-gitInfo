@@ -81,15 +81,14 @@ describe('tagGitRepo', function () {
       return tagGitRepo(someRepoPaths[0], tagName)
         .then(
           () => {
+            stub.restore()
             assert.fail('should not have resolved')
           },
           exc => {
+            stub.restore()
             assert.strictEqual(exc.message, tagGitRepo.couldNotCreateTagMsg)
           }
         )
-        .finally(() => {
-          stub.restore()
-        })
     }
 
     it('fails as expected when we cannot tag, with a fast exception', function () {
