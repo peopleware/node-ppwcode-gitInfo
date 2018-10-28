@@ -75,7 +75,10 @@ class GitInfo {
       JSON.parse(JSON.stringify(this)).isPushed === this.isPushed &&
       JSON.parse(JSON.stringify(this)).isPrecious === this.isPrecious &&
       JSON.parse(JSON.stringify(this)).isSave === this.isSave &&
-      typeof GitInfo.branchDoesNotExistOnRemoteMessageFraction === 'string'
+      typeof GitInfo.branchDoesNotExistOnRemoteMessageFraction === 'string' &&
+      typeof GitInfo.originRemoteDoesNotExistMessage === 'function' &&
+      typeof GitInfo.originRemoteDoesNotExistMessage() === 'string' &&
+      GitInfo.originRemoteDoesNotExistMessage().indexOf(GitInfo.originRemoteName) >= 0
   }
 
   /**
@@ -259,6 +262,7 @@ GitInfo.gitRefsPattern = /^refs\/heads\/(.*)$/
 GitInfo.gitOriginRefsPrefix = 'refs/remotes/' + GitInfo.originRemoteName + '/'
 GitInfo.masterBranchName = 'master'
 GitInfo.defaultEnvironmentName = 'default'
+GitInfo.originRemoteDoesNotExistMessage = () => 'remote "' + GitInfo.originRemoteName + '" does not exist'
 
 /**
  * Promise for the path of the directory of the highest git working copy {@code path} is in. This is the top most
@@ -330,6 +334,7 @@ GitInfo.create = new PromiseContract({
   return util.realPromise(Git.Repository.open(gitDirPath))
     .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })
     .then(repository => {
+      const originRemoteDoesNotExistMessage = GitInfo.originRemoteDoesNotExistMessage()
       // noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
       return all({
         sha: repository
@@ -355,7 +360,7 @@ GitInfo.create = new PromiseContract({
           })),
         originUrl: repository
           .getRemote(GitInfo.originRemoteName)
-          .catch(() => new Error('remote "' + GitInfo.originRemoteName + '" does not exist'))
+          .catch(() => { throw new Error(originRemoteDoesNotExistMessage) })
           .then(remote => remote.url()),
         changes: repository
           .getStatus()

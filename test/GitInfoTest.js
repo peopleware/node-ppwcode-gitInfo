@@ -253,8 +253,21 @@ describe('GitInfo', function () {
     it('fails with an error when getRemote fails, fast', function () {
       return failToGet('getRemote', 'throws')
     })
-    it('fails with an error when getRemote rejects', function () {
-      return failToGet('getRemote', 'rejects')
+
+    it('fails with an expected exception when getRemote rejects', function () {
+      const stub = sinon.stub(Git.Repository.prototype, 'getRemote')
+      stub.rejects()
+      return GitInfo.create(thisGitRepoRoot)
+        .then(
+          () => {
+            stub.restore()
+            assert.fail('should not have resolved')
+          },
+          exc => {
+            stub.restore()
+            assert.strictEqual(exc.message, GitInfo.originRemoteDoesNotExistMessage())
+          }
+        )
     })
   })
 
