@@ -16,13 +16,16 @@
 
 /* global describe, it, before, after */
 
-const GitInfo = require('../GitInfo')
+const Git = require('nodegit')
 const util = require('./_util')
 const path = require('path')
 const fs = require('fs')
 const Q = require('q')
 const ConditionError = require('@toryt/contracts-iv/lib/IV/ConditionError')
-const Git = require('nodegit')
+const proxyquire = require('proxyquire')
+const GitInfo = proxyquire('../GitInfo', { nodegit: Git })
+const assert = require('assert')
+const sinon = require('sinon')
 
 const thisGitRepoRoot = path.dirname(path.dirname(__dirname))
 // noinspection SpellCheckingInspection
