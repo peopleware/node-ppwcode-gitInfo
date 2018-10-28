@@ -15,12 +15,17 @@
  */
 
 const Contract = require('@toryt/contracts-iv')
+const PromiseContract = require('@toryt/contracts-iv/lib/IV/PromiseContract')
 const path = require('path')
 const fs = require('fs')
 const Q = require('q')
 const Git = require('nodegit')
 const querystring = require('querystring')
 const all = require('promise-all')
+
+const exceptionIsAnError = [
+  function () { return arguments[arguments.length - 2] instanceof Error }
+]
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
@@ -243,7 +248,7 @@ GitInfo.constructorContract = new Contract({
     (path, sha, branch, originUrl, changes, originBranchSha, result) =>
       !originBranchSha || result.originBranchSha === originBranchSha
   ],
-  exception: [() => false]
+  exception: Contract.mustNotHappen
 })
 
 GitInfo.shaRegExp = /^[a-f0-9]{40}$/
@@ -258,37 +263,24 @@ GitInfo.defaultEnvironmentName = 'default'
  * Promise for the path of the directory of the highest git working copy {@code path} is in. This is the top most
  + ancestor directory of {@code path} that contains a {@code .git} folder.
  */
-GitInfo.highestGitDirPath = new Contract({
+GitInfo.highestGitDirPath = new PromiseContract({
   pre: [
     (dirPath) => typeof dirPath === 'string'
   ],
   post: [
-    (dirPath, result) => Q.isPromiseAlike(result)
+    (dirPath, result) => result === undefined || (typeof result === 'string' && !!result),
+    (dirPath, result) => !result || dirPath.startsWith(result)
   ],
-  exception: [() => false]
+  fastException: PromiseContract.mustNotHappen,
+  exception: PromiseContract.mustNotHappen
 })
   .implementation(dirPath => {
     const parts = dirPath.split(path.sep)
     const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
-    return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({ dir: dir, name: '.git' }), 'rw')
+    return Promise.all(dirs.map(dir => Q.nfcall(fs.access, path.format({ dir: dir, name: '.git' }), 'rw')
       .then(() => dir)
       .catch(() => undefined)))
       .then(gitDirs => gitDirs.find(dir => !!dir))
-      .then(
-        new Contract({
-          pre: [
-            result => result === undefined || (typeof result === 'string' && !!result),
-            result => !result || dirPath.startsWith(result)
-          ],
-          post: [(highestGitDirPath, result) => result === highestGitDirPath],
-          exception: [() => false]
-        }).implementation(highestGitDirPath => highestGitDirPath),
-        new Contract({
-          pre: [() => false], // should not be called
-          post: [() => false],
-          exception: [(err1, err2) => err1 === err2]
-        }).implementation(err => { throw err })
-      )
   })
 
 /**
@@ -312,7 +304,7 @@ GitInfo.isNotClean = new Contract({
     (status, result) => !status.isDeleted() || result,
     (status, result) => !status.isIgnored() || !result
   ],
-  exception: [() => false]
+  exception: Contract.mustNotHappen
 }).implementation(function (status) {
   return !!(status.isNew() || status.isModified() || status.isTypechange() || status.isRenamed() || status.isDeleted())
 })
@@ -321,18 +313,21 @@ GitInfo.isNotClean = new Contract({
  * Promise for the git working copy information in {@code gitDirPath}.
  * The promise is rejected if {@code gitDirPath} does not point to a git working copy.
  */
-GitInfo.create = new Contract({
+GitInfo.create = new PromiseContract({
   pre: [
     (gitDirPath) => typeof gitDirPath === 'string',
     (gitDirPath) => !!gitDirPath
   ],
   post: [
-    (dirPath, result) => Q.isPromiseAlike(result)
+    (gitDirPath, result) => result instanceof GitInfo,
+    (gitDirPath, result) => result.path === gitDirPath
   ],
-  exception: [() => false]
+  fastException: PromiseContract.mustNotHappen,
+  exception: exceptionIsAnError
 }).implementation(function (gitDirPath) {
+  // NOTE wrapped in Promise.all to make the result an instance of native Promise, because Contracts requires that
   // noinspection JSUnresolvedVariable
-  return Git.Repository
+  return Promise.all(Git.Repository
     .open(gitDirPath)
     .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })
     .then(repository => {
@@ -376,22 +371,7 @@ GitInfo.create = new Contract({
           params.changes,
           params.branch.originSha
         ))
-    })
-    .then(
-      new Contract({
-        pre: [
-          gitInfo => gitInfo instanceof GitInfo,
-          gitInfo => gitInfo.path === gitDirPath
-        ],
-        post: [(gitInfo, result) => result === gitInfo],
-        exception: [() => false]
-      }).implementation(gitInfo => gitInfo),
-      new Contract({
-        pre: [(err) => err instanceof Error],
-        post: [() => false],
-        exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => { throw err })
-    )
+    }))
 })
 
 GitInfo.noGitDirectoryMsg = 'NO GIT DIRECTORY'
@@ -400,15 +380,17 @@ GitInfo.noGitDirectoryMsg = 'NO GIT DIRECTORY'
  * Promise for the git working copy information of the highest git working copy {@code path} is in.
  * The promise is rejected if there is no git working copy above {@code path}.
  */
-GitInfo.createForHighestGitDir = new Contract({
+GitInfo.createForHighestGitDir = new PromiseContract({
   pre: [
     (path) => typeof path === 'string',
     (path) => !!path
   ],
   post: [
-    (path, result) => Q.isPromiseAlike(result)
+    (path, result) => result instanceof GitInfo,
+    (path, result) => path.startsWith(result.path)
   ],
-  exception: [() => false]
+  fastException: PromiseContract.mustNotHappen,
+  exception: exceptionIsAnError
 }).implementation(function (path) {
   return GitInfo
     .highestGitDirPath(path)
@@ -418,21 +400,6 @@ GitInfo.createForHighestGitDir = new Contract({
       }
       return GitInfo.create(gitDirPath)
     })
-    .then(
-      new Contract({
-        pre: [
-          gitInfo => gitInfo instanceof GitInfo,
-          gitInfo => path.startsWith(gitInfo.path)
-        ],
-        post: [(gitInfo, result) => result === gitInfo],
-        exception: [() => false]
-      }).implementation(gitInfo => gitInfo),
-      new Contract({
-        pre: [(err) => err instanceof Error],
-        post: [() => false],
-        exception: [(err1, err2) => err1 === err2]
-      }).implementation(err => { throw err })
-    )
 })
 
 module.exports = GitInfo
