@@ -17,10 +17,17 @@
 const Contract = require('@toryt/contracts-iii')
 const path = require('path')
 const fs = require('fs')
-const Q = require('q')
 const Git = require('nodegit')
 const querystring = require('querystring')
 const all = require('promise-all')
+
+function isObject (value) {
+  return value === Object(value)
+}
+
+function isPromiseAlike (object) {
+  return isObject(object) && typeof object.then === 'function'
+}
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
@@ -263,14 +270,14 @@ GitInfo.highestGitDirPath = new Contract({
     (dirPath) => typeof dirPath === 'string'
   ],
   post: [
-    (dirPath, result) => Q.isPromiseAlike(result)
+    (dirPath, result) => isPromiseAlike(result)
   ],
   exception: [() => false]
 })
   .implementation(dirPath => {
     const parts = dirPath.split(path.sep)
     const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
-    return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({ dir: dir, name: '.git' }), 'rw')
+    return Promise.all(dirs.map(dir => Q.nfcall(fs.access, path.format({ dir: dir, name: '.git' }), 'rw')
       .then(() => dir)
       .catch(() => undefined)))
       .then(gitDirs => gitDirs.find(dir => !!dir))
@@ -327,7 +334,7 @@ GitInfo.create = new Contract({
     (gitDirPath) => !!gitDirPath
   ],
   post: [
-    (dirPath, result) => Q.isPromiseAlike(result)
+    (dirPath, result) => isPromiseAlike(result)
   ],
   exception: [() => false]
 }).implementation(function (gitDirPath) {
@@ -406,7 +413,7 @@ GitInfo.createForHighestGitDir = new Contract({
     (path) => !!path
   ],
   post: [
-    (path, result) => Q.isPromiseAlike(result)
+    (path, result) => isPromiseAlike(result)
   ],
   exception: [() => false]
 }).implementation(function (path) {

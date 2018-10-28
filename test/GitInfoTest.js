@@ -20,7 +20,6 @@ const GitInfo = require('../GitInfo')
 const util = require('./_util')
 const path = require('path')
 const fs = require('fs')
-const Q = require('q')
 const ConditionError = require('@toryt/contracts-iii/src/III/ConditionError')
 const Git = require('nodegit')
 
@@ -140,7 +139,7 @@ describe('GitInfo', function () {
             )
             intermediate = path.dirname(intermediate)
           }
-          return Q.all(testPromises)
+          return Promise.all(testPromises)
         })
       })
     })
@@ -149,7 +148,7 @@ describe('GitInfo', function () {
   describe('isNotClean', function () {
     it('should behave for all files in this repo', function () {
       // noinspection JSUnresolvedVariable,JSCheckFunctionSignatures
-      return Q.all(
+      return Promise.all(
         Git
           .Repository
           .open(path.dirname(path.dirname(path.resolve(__filename))))
@@ -184,7 +183,7 @@ describe('GitInfo', function () {
   describe('createForHighestGitDir', function () {
     somePaths.forEach(function (dirPath) {
       it('should return a promise for "' + dirPath + '"', function () {
-        return Q.all([
+        return Promise.all([
           GitInfo.createForHighestGitDir(dirPath).then(
             gitInfo => {
               util.validateInvariants(gitInfo)
