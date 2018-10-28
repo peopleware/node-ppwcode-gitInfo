@@ -209,29 +209,6 @@ describe('GitInfo', function () {
       })
     })
 
-    function failToGetBranchCommit (stubby) {
-      const stubError = new Error('Stub error')
-      const stub = sinon.stub(Git.Repository.prototype, 'getBranchCommit')
-      stubby(stub, stubError)
-      return GitInfo.create(thisGitRepoRoot)
-        .then(
-          () => {
-            stub.restore()
-            assert.fail('should not have resolved')
-          },
-          exc => {
-            stub.restore()
-            assert.strictEqual(exc, stubError)
-          }
-        )
-    }
-
-    it('fails with an error when getBranchCommit fails, fast', function () {
-      return failToGetBranchCommit((stub, stubError) => stub.throws(stubError))
-    })
-    it('fails with an error when getBranchCommit rejects', function () {
-      return failToGetBranchCommit((stub, stubError) => stub.rejects(stubError))
-    })
     it('returns an undefined sha if the branch does not exist in the remote', function () {
       const stubError = new Error(GitInfo.branchDoesNotExistOnRemoteMessageFraction)
       const stub = sinon.stub(Git.Repository.prototype, 'getBranchCommit')
@@ -248,6 +225,36 @@ describe('GitInfo', function () {
             throw err
           }
         )
+    })
+
+    function failToGet (method, stubby) {
+      const stubError = new Error('Stub error')
+      const stub = sinon.stub(Git.Repository.prototype, method)
+      stub[stubby](stubError)
+      return GitInfo.create(thisGitRepoRoot)
+        .then(
+          () => {
+            stub.restore()
+            assert.fail('should not have resolved')
+          },
+          exc => {
+            stub.restore()
+            assert.strictEqual(exc, stubError)
+          }
+        )
+    }
+
+    it('fails with an error when getBranchCommit fails, fast', function () {
+      return failToGet('getBranchCommit', 'throws')
+    })
+    it('fails with an error when getBranchCommit rejects', function () {
+      return failToGet('getBranchCommit', 'rejects')
+    })
+    it('fails with an error when getRemote fails, fast', function () {
+      return failToGet('getRemote', 'throws')
+    })
+    it('fails with an error when getRemote rejects', function () {
+      return failToGet('getRemote', 'rejects')
     })
   })
 
