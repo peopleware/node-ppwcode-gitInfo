@@ -24,7 +24,13 @@ const proxyquire = require('proxyquire')
 const tagGitRepo = proxyquire('../tagGitRepo', { nodegit: Git })
 
 const someRepoPaths = [path.dirname(path.dirname(__filename)), '/repo/does/not/exist']
-const aTagName = 'automated_test/tagGitRepo/' + Date.now()
+const aTagNameBase = 'automated_test/tagGitRepo/' + Date.now()
+
+let counter = 0
+
+function aTagName () {
+  return aTagNameBase + '/' + counter
+}
 
 describe('tagGitRepo', function () {
   describe('tagGitRepo', function () {
@@ -37,7 +43,7 @@ describe('tagGitRepo', function () {
     })
 
     someRepoPaths.forEach(function (path) {
-      const tagName = aTagName
+      const tagName = aTagName()
       it('creates the expected tag, or fails expected, for "' + path + '" and tag "' + tagName, function () {
         // noinspection JSUnresolvedVariable,JSUnresolvedFunction
         return tagGitRepo(path, tagName)
@@ -65,6 +71,17 @@ describe('tagGitRepo', function () {
             }
           )
       })
+    })
+
+    it('fails as expected when we cannot tag', function () {
+      const tagName = aTagName()
+      return tagGitRepo(someRepoPaths[0], tagName)
+        .catch(exc => {
+          assert.strictEqual(exc.message, tagGitRepo.couldNotCreateTagMsg)
+        })
+        .then(() => {
+          assert.fail('should not have resolved')
+        })
     })
   })
 })
