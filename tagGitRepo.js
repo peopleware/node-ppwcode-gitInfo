@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Contract = require('@toryt/contracts-iii')
+const Contract = require('@toryt/contracts-iv')
 const Git = require('nodegit')
 const GitInfo = require('./GitInfo')
 const Q = require('q')

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* global describe, it */
+/* global describe, it, before, after */
 
 const Git = require('nodegit')
 const path = require('path')
@@ -26,6 +26,14 @@ const aTagName = 'automated_test/tagGitRepo/' + Date.now()
 
 describe('tagGitRepo', function () {
   describe('tagGitRepo', function () {
+    before(function () {
+      tagGitRepo.contract.verifyPostconditions = true
+    })
+
+    after(function () {
+      tagGitRepo.contract.verifyPostconditions = false
+    })
+
     someRepoPaths.forEach(function (path) {
       const tagName = aTagName
       it('creates the expected tag, or fails expected, for "' + path + '" and tag "' + tagName, function () {
