@@ -269,7 +269,7 @@ GitInfo.highestGitDirPath = new Contract({
   .implementation(dirPath => {
     const parts = dirPath.split(path.sep)
     const dirs = parts.map((part, index) => parts.slice(0, index + 1).join(path.sep))
-    return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({dir: dir, name: '.git'}), 'rw')
+    return Q.all(dirs.map(dir => Q.nfcall(fs.access, path.format({ dir: dir, name: '.git' }), 'rw')
       .then(() => dir)
       .catch(() => undefined)))
       .then(gitDirs => gitDirs.find(dir => !!dir))

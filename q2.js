@@ -27,7 +27,7 @@ function object (promises) {
   if (!promises) {
     return promises
   }
-  return Q.all(Object.keys(promises).map((key) => Q.when(promises[key], (value) => ({key, value}))))
+  return Q.all(Object.keys(promises).map((key) => Q.when(promises[key], (value) => ({ key, value }))))
     .then((kvPairs) => kvPairs.reduce(
       (acc, kvPair) => {
         acc[kvPair.key] = kvPair.value

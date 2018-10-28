@@ -73,8 +73,8 @@ describe('GitInfo', function () {
   describe('constructor', function () {
     const path = thisGitRepoRoot
     someBranchNames
-      .map(name => { return {name: name, precious: false} })
-      .concat(preciousBranchNames.map(name => { return {name: name, precious: true} }))
+      .map(name => { return { name: name, precious: false } })
+      .concat(preciousBranchNames.map(name => { return { name: name, precious: true } }))
       .forEach(branch => {
         const sha = aSha
         someOriginUrls.forEach(originUrl => {
@@ -126,11 +126,11 @@ describe('GitInfo', function () {
           }
 
           const testPromises = [
-            Q.nfcall(fs.access, path.format({dir: highestPath, name: '.git'}), 'rw')
+            Q.nfcall(fs.access, path.format({ dir: highestPath, name: '.git' }), 'rw')
           ]
           let intermediate = dirPath
           while (intermediate.startsWith(highestPath) && intermediate !== highestPath) {
-            const p = path.format({dir: intermediate, name: '.git'})
+            const p = path.format({ dir: intermediate, name: '.git' })
             testPromises.push(
               Q.nfcall(fs.access, p, 'rw')
                 .then(
