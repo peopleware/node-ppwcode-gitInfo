@@ -232,6 +232,23 @@ describe('GitInfo', function () {
     it('fails with an error when getBranchCommit rejects', function () {
       return failToGetBranchCommit((stub, stubError) => stub.rejects(stubError))
     })
+    it('returns an undefined sha if the branch does not exist in the remote', function () {
+      const stubError = new Error(GitInfo.branchDoesNotExistOnRemoteMessageFraction)
+      const stub = sinon.stub(Git.Repository.prototype, 'getBranchCommit')
+      stub.rejects(stubError)
+      return GitInfo.create(thisGitRepoRoot)
+        .then(
+          result => {
+            stub.restore()
+            console.log(result)
+            assert.strictEqual(result.originBranchSha, undefined)
+          },
+          err => {
+            stub.restore()
+            throw err
+          }
+        )
+    })
   })
 
   describe('createForHighestGitDir', function () {

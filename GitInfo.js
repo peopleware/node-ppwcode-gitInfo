@@ -25,6 +25,8 @@ const all = require('promise-all')
 const util = require('./_util')
 const exceptionIsAnError = util.exceptionIsAnError
 
+const branchDoesNotExistOnRemoteMessageFraction = 'no reference found for shorthand'
+
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
  */
@@ -72,7 +74,8 @@ class GitInfo {
       JSON.parse(JSON.stringify(this)).isClean === this.isClean &&
       JSON.parse(JSON.stringify(this)).isPushed === this.isPushed &&
       JSON.parse(JSON.stringify(this)).isPrecious === this.isPrecious &&
-      JSON.parse(JSON.stringify(this)).isSave === this.isSave
+      JSON.parse(JSON.stringify(this)).isSave === this.isSave &&
+      typeof GitInfo.branchDoesNotExistOnRemoteMessageFraction === 'string'
   }
 
   /**
@@ -342,7 +345,7 @@ GitInfo.create = new PromiseContract({
               .then(
                 head => head.sha(),
                 err => {
-                  if (err && err.message && err.message.indexOf('no reference found for shorthand') >= 0) {
+                  if (err && err.message && err.message.indexOf(branchDoesNotExistOnRemoteMessageFraction) >= 0) {
                     // the branch does not exist in the remote, so certainly not pushed
                     return undefined
                   }
@@ -397,5 +400,7 @@ GitInfo.createForHighestGitDir = new PromiseContract({
       return GitInfo.create(gitDirPath)
     })
 })
+
+GitInfo.branchDoesNotExistOnRemoteMessageFraction = branchDoesNotExistOnRemoteMessageFraction
 
 module.exports = GitInfo
