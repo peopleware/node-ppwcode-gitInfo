@@ -32,7 +32,7 @@ program
                'ancestor directory that contains a .git folder. cwd is the default for [path].')
   .action(function (path) {
     GitInfo.highestGitDirPath(path || process.cwd())
-      .done((gitPath) => console.log(gitPath))
+      .then((gitPath) => console.log(gitPath))
   })
 
 program
@@ -43,7 +43,7 @@ program
   .action(function (path) {
     GitInfo
       .createForHighestGitDir(path || process.cwd())
-      .done(
+      .then(
         (gitInfo) => console.log('%j', gitInfo),
         (err) => {
           if (err.message === GitInfo.noGitDirectoryMsg) {
@@ -71,7 +71,7 @@ program
     GitInfo
       .highestGitDirPath(gitBasePath)
       .then(gitPath => tagGitRepo(gitPath, tagName))
-      .done(
+      .then(
         () => {
           console.log('%j', { tag: tagName })
         },
@@ -96,7 +96,7 @@ program
     const gitBasePath = path || process.cwd()
     GitInfo
       .createForHighestGitDir(gitBasePath)
-      .done(
+      .then(
         (gitInfo) => console.log(gitInfo.environment),
         (err) => {
           if (err.message === GitInfo.noGitDirectoryMsg) {
