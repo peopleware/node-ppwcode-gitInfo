@@ -1,5 +1,5 @@
 /**
- *    Copyright 2017 PeopleWare n.v.
+ *    Copyright 2017 - 2018 PeopleWare n.v.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const Contract = require('@toryt/contracts-iv')
+const PromiseContract = require('@toryt/contracts-iv/lib/IV/PromiseContract')
 const Git = require('nodegit')
 const GitInfo = require('./GitInfo')
-const Q = require('q')
+const util = require('./_util')
 
 /**
  * Tag the git repository at {@code path} with {@code tagName}, and return a Promise
@@ -28,22 +28,24 @@ const Q = require('q')
  * @param {string} path - path to the git repository to tag;
  *                        should be a path to a directory that contains a {@code .git/} folder
  */
-const tagGitRepo = new Contract({
+const tagGitRepo = new PromiseContract({
   pre: [
     (path, tagName) => typeof path === 'string',
     (path, tagName) => !!path,
     (path, tagName) => typeof tagName === 'string',
     (path, tagName) => !!tagName
   ],
-  post: [
-    (path, tagName, result) => Q.isPromiseAlike(result)
-  ],
-  exception: [() => false]
+  post: [], // void
+  fastException: PromiseContract.mustNotHappen,
+  exception: [
+    util.exceptionIsAnErrorCondition,
+    (path, tagName, exc) => exc.message === GitInfo.noGitDirectoryMsg || exc.message === tagGitRepo.couldNotCreateTagMsg
+  ]
 }).implementation(function tagGit (path, tagName) {
   const message = 'tag with ' + tagName
+  // NOTE wrapped in Promise.all to make the result an instance of native Promise, because Contracts requires that
   // noinspection JSUnresolvedVariable
-  return Git.Repository
-    .open(path)
+  return util.realPromise(Git.Repository.open(path))
     .catch(ignore => {
       throw new Error(GitInfo.noGitDirectoryMsg)
     })
@@ -62,16 +64,6 @@ const tagGitRepo = new Contract({
           throw new Error(tagGitRepo.couldNotCreateTagMsg)
         })
     )
-    .catch(new Contract({
-      pre: [
-        err => err instanceof Error,
-        err => err.message === GitInfo.noGitDirectoryMsg || err.message === tagGitRepo.couldNotCreateTagMsg
-      ],
-      post: [() => false],
-      exception: [(err1, err2) => err1 === err2]
-    }).implementation(function (err) {
-      throw err
-    }))
 })
 
 tagGitRepo.couldNotCreateTagMsg = 'COULD NOT CREATE TAG'
