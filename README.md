@@ -43,8 +43,26 @@ is intended for use in a [Terraform external data source provider]. It returns J
 
 
 
+Compatibility
+=============
+
+This library is intended to be compatible with Node 6, 8, and 10.
+
+Therefor, the code does not use `async` / `await`, which was introduced in Node 8.
+
+
+
+Development
+===========
+
+Node version
+------------
+
+Development is done in Node 10, via `nvm`.
+
+
 Style
-=====
+-----
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
