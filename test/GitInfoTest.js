@@ -316,6 +316,28 @@ describe('GitInfo', function () {
           }
         )
     })
+
+    it('works when the repo is forced to be dirty', function () {
+      // introduced to cover the getStatus() path when the repo is clean
+
+      const makeTheRepoDirtyFileName = 'makeTheRepoDirty.txt'
+      const makeTheRepoDirtyPath = path.format({ dir: thisGitRepoRoot, name: makeTheRepoDirtyFileName })
+
+      function rm () {
+        return Q.nfcall(fs.unlink, makeTheRepoDirtyPath)
+      }
+
+      return Q.nfcall(fs.open, makeTheRepoDirtyPath, 'w')
+        .then(fd => Q.nfcall(fs.close, fd))
+        .then(() => GitInfo.create(thisGitRepoRoot))
+        .then(
+          gitInfo => {
+            util.validateInvariants(gitInfo)
+            console.log('create success for %s: %s', thisGitRepoRoot, JSON.stringify(gitInfo))
+          }
+        )
+        .then(rm, rm)
+    })
   })
 
   describe('createForHighestGitDir', function () {
