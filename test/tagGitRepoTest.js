@@ -18,8 +18,10 @@
 
 const Git = require('nodegit')
 const path = require('path')
-const tagGitRepo = require('../tagGitRepo')
 const GitInfo = require('../GitInfo')
+const assert = require('assert')
+const proxyquire = require('proxyquire')
+const tagGitRepo = proxyquire('../tagGitRepo', { nodegit: Git })
 
 const someRepoPaths = [path.dirname(path.dirname(__filename)), '/repo/does/not/exist']
 const aTagName = 'automated_test/tagGitRepo/' + Date.now()
