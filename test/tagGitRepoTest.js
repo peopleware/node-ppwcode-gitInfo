@@ -20,6 +20,7 @@ const Git = require('nodegit')
 const path = require('path')
 const GitInfo = require('../GitInfo')
 const assert = require('assert')
+const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 const tagGitRepo = proxyquire('../tagGitRepo', { nodegit: Git })
 
@@ -73,15 +74,26 @@ describe('tagGitRepo', function () {
       })
     })
 
-    it('fails as expected when we cannot tag', function () {
+    function failToTag (stubby) {
       const tagName = aTagName()
+      const stub = sinon.stub(Git.Tag, 'create')
+      stubby(stub)
       return tagGitRepo(someRepoPaths[0], tagName)
-        .catch(exc => {
-          assert.strictEqual(exc.message, tagGitRepo.couldNotCreateTagMsg)
+        .then(
+          () => {
+            assert.fail('should not have resolved')
+          },
+          exc => {
+            assert.strictEqual(exc.message, tagGitRepo.couldNotCreateTagMsg)
+          }
+        )
+        .finally(() => {
+          stub.restore()
         })
-        .then(() => {
-          assert.fail('should not have resolved')
-        })
+    }
+
+    it('fails as expected when we cannot tag, with a fast exception', function () {
+      return failToTag(stub => stub.throws())
     })
   })
 })
