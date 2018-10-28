@@ -48,11 +48,6 @@ Compatibility
 
 This library is intended to be compatible with Node 6, 8, and 10.
 
-Therefor, the code does not use `async` / `await`, which was introduced in Node 8.
-
-Also, we use `Q` as Promise library, instead of native Promises, since Node 6 does not yet support `util.promisify()`.
-We use `Q.nfcall` instead.
-
 
 
 Development
