@@ -1,1 +1,7 @@
 .idea
+coverage
+test
+.nyc_output
+.gitignore
+.nvmrc
+How_to_publish.md
