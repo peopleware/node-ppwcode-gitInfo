@@ -95,5 +95,9 @@ describe('tagGitRepo', function () {
     it('fails as expected when we cannot tag, with a fast exception', function () {
       return failToTag(stub => stub.throws())
     })
+
+    it('fails as expected when we cannot tag, with a rejection', function () {
+      return failToTag(stub => stub.rejects())
+    })
   })
 })
