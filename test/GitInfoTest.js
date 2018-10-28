@@ -178,6 +178,53 @@ describe('GitInfo', function () {
           .then(statuses => statuses.map(status => GitInfo.isNotClean(status)))
       )
     })
+
+    function ok () { return true }
+
+    function nok () { return false }
+
+    const statusMethods = ['isNew', 'isModified', 'isTypechange', 'isRenamed', 'isDeleted']
+
+    function okMock () {
+      const mock = {
+        isIgnored: nok
+      }
+      statusMethods.forEach(statusMethod => {
+        mock[statusMethod] = nok
+      })
+      return mock
+    }
+
+    it('should return false when not ignored and clean', function () {
+      const mockStatus = okMock()
+      const result = GitInfo.isNotClean(mockStatus)
+      assert.ok(!result)
+    })
+
+    describe('should behave when ignored', function () {
+      statusMethods.concat([undefined]).forEach(statusMethod => {
+        it(`should return false when ignored, and status method ${statusMethod} is nok`, function () {
+          const mockStatus = okMock()
+          mockStatus.isIgnored = ok
+          if (statusMethod) {
+            mockStatus[statusMethod] = nok
+          }
+          const result = GitInfo.isNotClean(mockStatus)
+          assert.ok(!result)
+        })
+      })
+    })
+
+    describe('should behave when not ignored and dirty', function () {
+      statusMethods.forEach(statusMethod => {
+        it(`should return true when not ignored and dirty because of ${statusMethod}`, function () {
+          const mockStatus = okMock()
+          mockStatus[statusMethod] = ok
+          const result = GitInfo.isNotClean(mockStatus)
+          assert.ok(result)
+        })
+      })
+    })
   })
 
   describe('create', function () {
