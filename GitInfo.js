@@ -302,16 +302,17 @@ GitInfo.isNotClean = new Contract({
   ],
   post: [
     (status, result) => typeof result === 'boolean',
-    (status, result) => !status.isNew() || result,
-    (status, result) => !status.isModified() || result,
-    (status, result) => !status.isTypechange() || result,
-    (status, result) => !status.isRenamed() || result,
-    (status, result) => !status.isDeleted() || result,
+    (status, result) => !status.isNew() || status.isIgnored() || result,
+    (status, result) => !status.isModified() || status.isIgnored() || result,
+    (status, result) => !status.isTypechange() || status.isIgnored() || result,
+    (status, result) => !status.isRenamed() || status.isIgnored() || result,
+    (status, result) => !status.isDeleted() || status.isIgnored() || result,
     (status, result) => !status.isIgnored() || !result
   ],
   exception: Contract.mustNotHappen
 }).implementation(function (status) {
-  return !!(status.isNew() || status.isModified() || status.isTypechange() || status.isRenamed() || status.isDeleted())
+  return !status.isIgnored() &&
+      !!(status.isNew() || status.isModified() || status.isTypechange() || status.isRenamed() || status.isDeleted())
 })
 
 /**
