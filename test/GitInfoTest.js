@@ -336,7 +336,13 @@ describe('GitInfo', function () {
             console.log('create success for %s: %s', thisGitRepoRoot, JSON.stringify(gitInfo))
           }
         )
-        .then(rm, rm)
+        .then(
+          rm,
+          err => {
+            rm()
+            throw err
+          }
+        )
     })
   })
 
