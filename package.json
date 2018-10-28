@@ -31,8 +31,7 @@
     "commander": "^2.19.0",
     "nodegit": "^0.23.0",
     "pkginfo": "^0.4.1",
-    "promise-all": "^1.0.0",
-    "q": "^1.5.1"
+    "promise-all": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
