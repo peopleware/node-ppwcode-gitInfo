@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Contract = require('@toryt/contracts-iii')
+const Contract = require('@toryt/contracts-iv')
 const path = require('path')
 const fs = require('fs')
 const Q = require('q')

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-/* global describe, it */
+/* global describe, it, before, after */
 
 const GitInfo = require('../GitInfo')
 const util = require('./_util')
 const path = require('path')
 const fs = require('fs')
 const Q = require('q')
-const ConditionError = require('@toryt/contracts-iii/src/III/ConditionError')
+const ConditionError = require('@toryt/contracts-iv/lib/IV/ConditionError')
 const Git = require('nodegit')
 
 const thisGitRepoRoot = path.dirname(path.dirname(__dirname))
@@ -115,9 +115,19 @@ describe('GitInfo', function () {
   }
 
   describe('highestGitDirPath', function () {
+    before(function () {
+      GitInfo.highestGitDirPath.contract.verifyPostconditions = true
+    })
+
+    after(function () {
+      GitInfo.highestGitDirPath.contract.verifyPostconditions = true
+    })
+
     somePaths.forEach(function (dirPath) {
       it('should return a promise for "' + dirPath + '"', function () {
+        GitInfo.highestGitDirPath.contract.verifyPostconditions = true
         const result = GitInfo.highestGitDirPath(dirPath)
+        GitInfo.highestGitDirPath.contract.verifyPostconditions = false
         return result.then(highestPath => {
           console.log('highest git dir path for "%s": "%s"', dirPath, highestPath)
 
@@ -147,6 +157,14 @@ describe('GitInfo', function () {
   })
 
   describe('isNotClean', function () {
+    before(function () {
+      GitInfo.isNotClean.contract.verifyPostconditions = true
+    })
+
+    after(function () {
+      GitInfo.isNotClean.contract.verifyPostconditions = true
+    })
+
     it('should behave for all files in this repo', function () {
       // noinspection JSUnresolvedVariable,JSCheckFunctionSignatures
       return Q.all(
@@ -160,6 +178,14 @@ describe('GitInfo', function () {
   })
 
   describe('create', function () {
+    before(function () {
+      GitInfo.create.contract.verifyPostconditions = true
+    })
+
+    after(function () {
+      GitInfo.create.contract.verifyPostconditions = true
+    })
+
     somePaths.forEach(function (dirPath) {
       it('should return a promise for "' + dirPath + '"', function () {
         const result = GitInfo.create(dirPath)
@@ -182,6 +208,14 @@ describe('GitInfo', function () {
   })
 
   describe('createForHighestGitDir', function () {
+    before(function () {
+      GitInfo.createForHighestGitDir.contract.verifyPostconditions = true
+    })
+
+    after(function () {
+      GitInfo.createForHighestGitDir.contract.verifyPostconditions = true
+    })
+
     somePaths.forEach(function (dirPath) {
       it('should return a promise for "' + dirPath + '"', function () {
         return Q.all([
