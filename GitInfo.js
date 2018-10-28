@@ -1,5 +1,5 @@
 /**
- *    Copyright 2017 PeopleWare n.v.
+ *    Copyright 2017 - 2018 PeopleWare n.v.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,8 @@ const Q = require('q')
 const Git = require('nodegit')
 const querystring = require('querystring')
 const all = require('promise-all')
-
-const exceptionIsAnError = [
-  function () { return arguments[arguments.length - 2] instanceof Error }
-]
+const util = require('./_util')
+const exceptionIsAnError = util.exceptionIsAnError
 
 /**
  * Holder for consolidated information about the git repository at {@code #path}.
@@ -327,8 +325,7 @@ GitInfo.create = new PromiseContract({
 }).implementation(function (gitDirPath) {
   // NOTE wrapped in Promise.all to make the result an instance of native Promise, because Contracts requires that
   // noinspection JSUnresolvedVariable
-  return Promise.all(Git.Repository
-    .open(gitDirPath)
+  return util.realPromise(Git.Repository.open(gitDirPath))
     .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })
     .then(repository => {
       // noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
@@ -371,7 +368,7 @@ GitInfo.create = new PromiseContract({
           params.changes,
           params.branch.originSha
         ))
-    }))
+    })
 })
 
 GitInfo.noGitDirectoryMsg = 'NO GIT DIRECTORY'
