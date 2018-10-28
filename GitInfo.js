@@ -323,7 +323,6 @@ GitInfo.create = new PromiseContract({
   fastException: PromiseContract.mustNotHappen,
   exception: exceptionIsAnError
 }).implementation(function (gitDirPath) {
-  // NOTE wrapped in Promise.all to make the result an instance of native Promise, because Contracts requires that
   // noinspection JSUnresolvedVariable
   return util.realPromise(Git.Repository.open(gitDirPath))
     .catch(() => { throw new Error(gitDirPath + ' is not a git directory') })

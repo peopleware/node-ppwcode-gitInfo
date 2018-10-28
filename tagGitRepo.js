@@ -43,7 +43,6 @@ const tagGitRepo = new PromiseContract({
   ]
 }).implementation(function tagGit (path, tagName) {
   const message = 'tag with ' + tagName
-  // NOTE wrapped in Promise.all to make the result an instance of native Promise, because Contracts requires that
   // noinspection JSUnresolvedVariable
   return util.realPromise(Git.Repository.open(path))
     .catch(ignore => {
