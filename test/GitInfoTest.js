@@ -27,7 +27,7 @@ const GitInfo = proxyquire('../GitInfo', { nodegit: Git })
 const assert = require('assert')
 const sinon = require('sinon')
 
-const thisGitRepoRoot = path.dirname(path.dirname(__dirname))
+const thisGitRepoRoot = path.dirname(__dirname)
 // noinspection SpellCheckingInspection
 const someBranchNames = [
   'master',
