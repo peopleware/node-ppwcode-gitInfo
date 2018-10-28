@@ -82,6 +82,22 @@ This code uses [Standard] coding style.
 
 
 
+TODO
+====
+
+Setup a CI
+----------
+
+Move to `ppwcode` team. Request access from Travis.
+Create parallel builds for Node 6, 8 10, and back tag.
+
+
+Test bin
+--------
+
+Create integration tests for the `bin/gitInfo.js` with 100% coverage.
+
+
 [Terraform]: https://peopleware.atlassian.net/wiki/x/CwAvBg
 [Node.js]: https://nodejs.org
 [Terraform external data source provider]: https://www.terraform.io/docs/providers/external/data_source.html
