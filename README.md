@@ -11,10 +11,6 @@ Installation
 
 To install, do
 
-    > yarn add \@ppwcode/node-gitinfo
-    
-or
-    
     > npm install --save \@ppwcode/node-gitinfo
 
     
