@@ -30,6 +30,7 @@ const aTagNameBase = 'automated_test/tagGitRepo/' + Date.now()
 let counter = 0
 
 function aTagName () {
+  counter++
   return aTagNameBase + '/' + counter
 }
 
