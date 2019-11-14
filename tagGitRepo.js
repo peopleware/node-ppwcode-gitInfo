@@ -41,20 +41,30 @@ const tagGitRepo = new PromiseContract({
     util.exceptionIsAnErrorCondition,
     (path, tagName, exc) => exc.message === GitInfo.noGitDirectoryMsg || exc.message === tagGitRepo.couldNotCreateTagMsg
   ]
-}).implementation(async function tagGit (path, tagName) {
+}).implementation(function tagGit (path, tagName) {
   const message = 'tag with ' + tagName
-  let repository
-  try {
-    repository = await Git.Repository.open(path)
-  } catch (ignore) {
-    throw new Error(GitInfo.noGitDirectoryMsg)
-  }
-  try {
-    const [head, signature] = await Promise.all([repository.getHeadCommit(), Git.Signature.default(repository)])
-    await Git.Tag.create(repository, tagName, head, signature, message, 0)
-  } catch (ignore) {
-    throw new Error(tagGitRepo.couldNotCreateTagMsg)
-  }
+  // noinspection JSUnresolvedVariable
+  return util.realPromise(Git.Repository.open(path))
+    .catch(ignore => {
+      throw new Error(GitInfo.noGitDirectoryMsg)
+    })
+    .then(repository =>
+      Promise.all([
+        repository.getHeadCommit(),
+        Git.Signature.default(repository)
+      ])
+        .then(resolution => Git.Tag.create(
+          repository,
+          tagName,
+          resolution[0], // head
+          resolution[1], // signature
+          message,
+          0
+        ))
+        .catch(ignore => {
+          throw new Error(tagGitRepo.couldNotCreateTagMsg)
+        })
+    )
 })
 
 tagGitRepo.couldNotCreateTagMsg = 'COULD NOT CREATE TAG'
